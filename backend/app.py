@@ -1,5 +1,5 @@
 from flask import Flask, jsonify, request
-from flask_jwt_extended import JWTManager, create_access_token 
+from flask_jwt_extended import JWTManager, create_access_token
 from flask_cors import CORS
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
@@ -23,6 +23,7 @@ limiter = Limiter(get_remote_address, app=app, default_limits=["100 per minute"]
 with app.app_context():
     db.create_all()
 
+
 @app.route("/login", methods=["POST"])
 @limiter.limit("10 per minute")
 def login_user():
@@ -37,16 +38,14 @@ def login_user():
     token = create_access_token(identity=email)
     return jsonify(access_token=token)
 
+
 @app.route("/users/create", methods=["POST"])
 @limiter.limit("10 per minute")
 def user_create():
     status = add_user(
-            request.form["username"],
-            request.form["email"],
-            request.form["password"]
-            )
+        request.form["username"], request.form["email"], request.form["password"]
+    )
 
     if status == AddUserReturnStatus.CONFLICT:
         return jsonify({"msg": "username or email taken"}), 409
     return "", 204
-
