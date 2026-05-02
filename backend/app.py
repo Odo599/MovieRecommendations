@@ -1,11 +1,12 @@
 from flask import Flask, jsonify, request
-from flask_jwt_extended import JWTManager, create_access_token
+from flask_jwt_extended import JWTManager, create_access_token, jwt_required
 from flask_cors import CORS
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 import os
 
 from database import db, add_user, AddUserReturnStatus, login, LoginStatus
+import tmdb_api as tmdb
 
 app = Flask(__name__)
 
@@ -49,3 +50,41 @@ def user_create():
     if status == AddUserReturnStatus.CONFLICT:
         return jsonify({"msg": "username or email taken"}), 409
     return "", 204
+
+
+@app.route("/movie/search", methods=["GET"])
+@limiter.limit("60 per minute")
+@jwt_required()
+def movie_search():
+    query = request.args["q"]
+    query = request.args.get("q")
+    if query == None:
+        return jsonify({"msg": "Missing term to search for."}), 400
+
+    results = tmdb.search(query)
+
+    return jsonify(results), 200
+
+
+@app.route("/movie/<id_str>/similar")
+@limiter.limit("10 per minute")
+@jwt_required()
+def movie_similar(id_str):
+    try:
+        movie_id = int(id_str)
+        results = tmdb.get_similar_movies(movie_id)
+        return jsonify(results), 200
+    except:
+        return jsonify({"msg": "could not parse id as an integer."}), 400
+
+
+@app.route("/movie/<id_str>")
+@limiter.limit("10 per minute")
+@jwt_required()
+def movie_info(id_str):
+    try:
+        movie_id = int(id_str)
+        results = tmdb.get_movie_details(movie_id)
+        return jsonify(results), 200
+    except:
+        return jsonify({"msg": "could not parse id as an integer"}), 400
