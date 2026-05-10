@@ -75,6 +75,7 @@ def login_user():
     set_access_cookies(response, token)
     return response
 
+
 @app.route("/logout", methods=["POST"])
 @limiter.limit("10 per minute")
 # @jwt_required()
@@ -87,13 +88,18 @@ def logout_user():
 @app.route("/users/create", methods=["POST"])
 @limiter.limit("10 per minute")
 def user_create():
-    status = add_user(
-        request.form["username"], request.form["email"], request.form["password"]
-    )
+    username = request.form["username"]
+    email = request.form["email"]
+    password = request.form["password"]
+    status = add_user(username, email, password)
 
     if status == AddUserReturnStatus.CONFLICT:
         return jsonify({"msg": "username or email taken"}), 409
-    return "", 204
+
+    token = create_access_token(identity=email)
+    response = jsonify(access_token=token)
+    set_access_cookies(response, token)
+    return response, 204
 
 
 @app.route("/movie/search", methods=["GET"])

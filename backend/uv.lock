@@ -479,6 +479,11 @@ dependencies = [
     { name = "tmdbsimple" },
 ]
 
+[package.dev-dependencies]
+dev = [
+    { name = "uv-script" },
+]
+
 [package.metadata]
 requires-dist = [
     { name = "argon2-cffi", specifier = ">=25.1.0" },
@@ -493,6 +498,9 @@ requires-dist = [
     { name = "requests-cache", specifier = ">=1.3.1" },
     { name = "tmdbsimple", specifier = ">=2.9.1" },
 ]
+
+[package.metadata.requires-dev]
+dev = [{ name = "uv-script", specifier = ">=0.1.9" }]
 
 [[package]]
 name = "mypy-extensions"
@@ -701,6 +709,15 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/c7/24/5f1b3bdffd70275f6661c76461e25f024d5a38a46f04aaca912426a2b1d3/urllib3-2.6.3.tar.gz", hash = "sha256:1b62b6884944a57dbe321509ab94fd4d3b307075e0c2eae991ac71ee15ad38ed", size = 435556, upload-time = "2026-01-07T16:24:43.925Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/39/08/aaaad47bc4e9dc8c725e68f9d04865dbcb2052843ff09c97b08904852d84/urllib3-2.6.3-py3-none-any.whl", hash = "sha256:bf272323e553dfb2e87d9bfd225ca7b0f467b919d7bbd355436d3fd37cb0acd4", size = 131584, upload-time = "2026-01-07T16:24:42.685Z" },
+]
+
+[[package]]
+name = "uv-script"
+version = "0.1.9"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/b7/32/4dbefcb9bb6197b588f1edfa6c50d2b18342e8c2b002be796ee3a0453ad3/uv_script-0.1.9.tar.gz", hash = "sha256:fda8dd28a1e037d0f41b5f0a0e7f15dd1ecc3deb03fe799f895fd7be639a81ac", size = 5962, upload-time = "2026-02-12T22:21:42.211Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/82/ba/10dc44db65ce99720c908c0c6c4cca52d8f2f222b67ca91db5d5ccb38062/uv_script-0.1.9-py3-none-any.whl", hash = "sha256:aea2f419f605617e27c6a3b5ce198c043231f79fdc770cdd0feb58258dd2c456", size = 7710, upload-time = "2026-02-12T22:21:40.802Z" },
 ]
 
 [[package]]

@@ -11,7 +11,10 @@ export function meta({}: Route.MetaArgs) {
 
 export default function Login() {
     const navigate = useNavigate();
-    const [loggedIn, setLoggedIn] = useLocalStorage<boolean>("logged_in", true);
+    const [loggedIn, setLoggedIn] = useLocalStorage<boolean>(
+        "logged_in",
+        false
+    );
     const [logInStatus, setLogInStatus] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -34,8 +37,7 @@ export default function Login() {
     };
 
     const redirectCreateAccount = async () => {
-        navigate("/create-account")
-        // todo create account page
+        navigate("/create-account");
     };
 
     return (
