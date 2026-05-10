@@ -7,6 +7,7 @@ from flask_jwt_extended import (
     get_jwt_identity,
     jwt_required,
     set_access_cookies,
+    unset_jwt_cookies,
 )
 from flask_cors import CORS
 from flask_limiter import Limiter, RateLimitExceeded
@@ -73,6 +74,14 @@ def login_user():
     response = jsonify(access_token=token)
     set_access_cookies(response, token)
     return response
+
+@app.route("/logout", methods=["POST"])
+@limiter.limit("10 per minute")
+# @jwt_required()
+def logout_user():
+    response = jsonify({"msg": "logout successful"})
+    unset_jwt_cookies(response)
+    return response, 200
 
 
 @app.route("/users/create", methods=["POST"])
