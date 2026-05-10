@@ -59,7 +59,7 @@ def refresh_expiring_jwts(response):
         return response
 
 
-@app.route("/login", methods=["POST"])
+@app.route("/api/login", methods=["POST"])
 @limiter.limit("10 per minute")
 def login_user():
     email = request.form["email"]
@@ -76,7 +76,7 @@ def login_user():
     return response
 
 
-@app.route("/logout", methods=["POST"])
+@app.route("/api/logout", methods=["POST"])
 @limiter.limit("10 per minute")
 # @jwt_required()
 def logout_user():
@@ -85,7 +85,7 @@ def logout_user():
     return response, 200
 
 
-@app.route("/users/create", methods=["POST"])
+@app.route("/api/users/create", methods=["POST"])
 @limiter.limit("10 per minute")
 def user_create():
     username = request.form["username"]
@@ -102,7 +102,7 @@ def user_create():
     return response, 204
 
 
-@app.route("/movie/search", methods=["GET"])
+@app.route("/api/movie/search", methods=["GET"])
 @limiter.limit("60 per minute")
 @jwt_required()
 def movie_search():
@@ -116,7 +116,7 @@ def movie_search():
     return jsonify(results), 200
 
 
-@app.route("/movie/<id_str>/similar")
+@app.route("/api/movie/<id_str>/similar")
 @limiter.limit("10 per minute")
 @jwt_required()
 def movie_similar(id_str):
@@ -128,7 +128,7 @@ def movie_similar(id_str):
         return jsonify({"msg": "could not parse id as an integer."}), 400
 
 
-@app.route("/movie/<id_str>")
+@app.route("/api/movie/<id_str>")
 @limiter.limit("10 per minute")
 @jwt_required()
 def movie_info(id_str):

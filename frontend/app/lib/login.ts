@@ -11,7 +11,7 @@ export default async function login(
     data.append("password", password);
 
     return axios
-        .post("http://127.0.0.1:5000/login", data, {
+        .post("/api/login", data, {
             withCredentials: true,
             headers: {
                 "Content-Type": "multipart/form-data",

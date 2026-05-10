@@ -3,7 +3,7 @@ import { AuthError } from "./errors";
 
 export default async function similar(id: number) {
     return axios
-        .get(`http://127.0.0.1:5000/movie/${id}/similar`, {
+        .get(`/api/movie/${id}/similar`, {
             withCredentials: true,
         })
         .then((response) => {

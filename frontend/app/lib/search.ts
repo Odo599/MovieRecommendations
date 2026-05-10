@@ -3,7 +3,7 @@ import { AuthError } from "./errors";
 
 export default async function search(query: string) {
     return axios
-        .get(`http://127.0.0.1:5000/movie/search?q=${query}`, {
+        .get(`/api/movie/search?q=${query}`, {
             withCredentials: true,
         })
         .then((response) => {
