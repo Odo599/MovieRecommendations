@@ -1,9 +1,5 @@
-import info from "~/lib/info";
+import SearchBar from "~/components/SearchBar";
 import type { Route } from "./+types/home";
-import { useState } from "react";
-import login from "~/lib/login";
-import search from "~/lib/search";
-import similar from "~/lib/similar";
 
 export function meta({}: Route.MetaArgs) {
     return [{ title: "Movie Recommendations" }];
@@ -11,8 +7,8 @@ export function meta({}: Route.MetaArgs) {
 
 export default function Home() {
     return (
-        <div>
-            <p>Home</p>
+        <div className="flex flex-col items-center justify-center h-screen">
+            <SearchBar />
         </div>
     );
 }

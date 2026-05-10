@@ -12,12 +12,15 @@
     "dependencies": {
         "@react-router/node": "7.14.0",
         "@react-router/serve": "7.14.0",
+        "@tailwindcss/vite": "^4.2.4",
         "axios": "^1.16.0",
         "form-data": "^4.0.5",
         "isbot": "^5.1.36",
         "react": "^19.2.4",
         "react-dom": "^19.2.4",
-        "react-router": "7.14.0"
+        "react-router": "7.14.0",
+        "tailwindcss": "^4.2.4",
+        "usehooks-ts": "^3.1.1"
     },
     "devDependencies": {
         "@eslint/eslintrc": "^3.3.5",

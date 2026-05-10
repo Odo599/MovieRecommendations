@@ -1,6 +1,6 @@
 import axios from "axios";
 import FormData from "form-data";
-import { RateLimitError } from "./errors";
+import { AuthError, RateLimitError } from "./errors";
 
 export default async function login(
     email: string,
@@ -21,7 +21,8 @@ export default async function login(
             return JSON.stringify(response.data);
         })
         .catch((error) => {
-            if (error.response.status == 429) throw RateLimitError("");
+            if (error.response.status == 429) throw new RateLimitError("");
+            if (error.response.status == 401) throw new AuthError("");
             console.log("error", error);
             throw error;
         });

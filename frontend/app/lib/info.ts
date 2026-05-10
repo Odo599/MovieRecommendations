@@ -11,7 +11,7 @@ export default async function info(id: number) {
         })
         .catch((error) => {
             if (error?.response?.status == 401) {
-                throw AuthError(JSON.stringify(error.response.body));
+                throw new AuthError(JSON.stringify(error.response.body));
             }
             throw error;
         });

@@ -1,19 +1,31 @@
-function AuthError(msg: string) {
-    const err = Error(msg);
-    err.name = "AuthError";
-    return err;
+class OfflineError extends Error {
+    message: string;
+
+    constructor(message: string) {
+        super(message);
+        this.name = "OfflineError";
+        this.message = message;
+    }
 }
 
-function OfflineError(msg: string) {
-    const err = Error(msg);
-    err.name = "AuthError";
-    return err;
+class RateLimitError extends Error {
+    message: string;
+
+    constructor(message: string) {
+        super(message);
+        this.name = "RateLimitError";
+        this.message = message;
+    }
 }
 
-function RateLimitError(msg: string) {
-    const err = Error(msg);
-    err.name = "RateLimitError";
-    return err;
+class AuthError extends Error {
+    message: string;
+
+    constructor(message: string) {
+        super(message);
+        this.name = "AuthError";
+        this.message = message;
+    }
 }
 
 export { AuthError, OfflineError, RateLimitError };

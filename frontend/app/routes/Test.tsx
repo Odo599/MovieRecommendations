@@ -9,7 +9,7 @@ export function meta({}: Route.MetaArgs) {
     return [{ title: "Movie Recommendations" }];
 }
 
-export default function Home() {
+export default function Test() {
     const [status, setStatus] = useState("");
 
     const errorHandler = (err: Error) => {
@@ -39,12 +39,22 @@ export default function Home() {
         info(603).then(setStatus).catch(errorHandler);
     };
 
+    const buttonClasses = "m-1 p-2 rounded-md bg-pink-700";
+
     return (
-        <div>
-            <button onClick={onClickLogin}>Login</button>
-            <button onClick={onClickSearch}>Search</button>
-            <button onClick={onClickSimilar}>Similar</button>
-            <button onClick={onClickInfo}>Info</button>
+        <div className="pl-3">
+            <button className={buttonClasses} onClick={onClickLogin}>
+                Login
+            </button>
+            <button className={buttonClasses} onClick={onClickSearch}>
+                Search
+            </button>
+            <button className={buttonClasses} onClick={onClickSimilar}>
+                Similar
+            </button>
+            <button className={buttonClasses} onClick={onClickInfo}>
+                Info
+            </button>
 
             <p>{status}</p>
         </div>
