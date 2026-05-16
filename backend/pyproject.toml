@@ -25,3 +25,4 @@ dev = [
 
 [tool.uvs.scripts]
 format = "black ."
+dev = "flask run --debug"
