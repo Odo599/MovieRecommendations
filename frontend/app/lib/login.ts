@@ -1,4 +1,4 @@
-import axios from "axios";
+import backendApi from "./api";
 import FormData from "form-data";
 import { AuthError, RateLimitError } from "./errors";
 
@@ -10,7 +10,7 @@ export default async function login(
     data.append("email", email);
     data.append("password", password);
 
-    return axios
+    return backendApi
         .post("/api/login", data, {
             withCredentials: true,
             headers: {
@@ -21,8 +21,8 @@ export default async function login(
             return JSON.stringify(response.data);
         })
         .catch((error) => {
-            if (error.response.status == 429) throw new RateLimitError("");
-            if (error.response.status == 401) throw new AuthError("");
+            if (error?.response?.status == 429) throw new RateLimitError("");
+            if (error?.response?.status == 401) throw new AuthError("");
             console.log("error", error);
             throw error;
         });

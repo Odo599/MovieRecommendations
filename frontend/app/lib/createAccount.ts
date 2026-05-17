@@ -1,6 +1,6 @@
-import axios from "axios";
+import backendApi from "./api";
 import FormData from "form-data";
-import { AuthError, RateLimitError, UserConflictError } from "./errors";
+import { RateLimitError, UserConflictError } from "./errors";
 
 export default async function createAccount(
     username: string,
@@ -12,7 +12,7 @@ export default async function createAccount(
     data.append("password", password);
     data.append("username", username);
 
-    return axios
+    return backendApi
         .post("/api/users/create", data, {
             withCredentials: true,
             headers: {
@@ -23,9 +23,8 @@ export default async function createAccount(
             return JSON.stringify(response.data);
         })
         .catch((error) => {
-            if (error.response.status == 429) throw new RateLimitError("");
-            if (error.response.status == 401) throw new AuthError("");
-            if (error.response.status == 409) throw new UserConflictError("");
+            if (error?.response?.status == 429) throw new RateLimitError("");
+            if (error?.response?.status == 409) throw new UserConflictError("");
             console.log("error", error);
             throw error;
         });

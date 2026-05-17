@@ -1,78 +1,95 @@
 import login from "~/lib/login";
 import type { Route } from "./+types/Login";
-import { useLocalStorage } from "usehooks-ts";
-import { useState } from "react";
-import { AuthError } from "~/lib/errors";
-import { useNavigate } from "react-router";
+import { AuthError, RateLimitError } from "~/lib/errors";
+import { data, redirect, useNavigate } from "react-router";
+import { getSession, commitSession } from "~/lib/sessions.server";
 
 export function meta({}: Route.MetaArgs) {
     return [{ title: "Login" }];
 }
 
-export default function Login() {
-    const navigate = useNavigate();
-    const [loggedIn, setLoggedIn] = useLocalStorage<boolean>(
-        "logged_in",
-        false
+export async function loader({ request }: Route.LoaderArgs) {
+    const session = await getSession(request.headers.get("Cookie"));
+    if (session.has("loggedIn")) {
+        return redirect("/");
+    }
+
+    return data(
+        { error: session.get("error") },
+        {
+            headers: {
+                "Set-Cookie": await commitSession(session),
+            },
+        }
     );
-    const [logInStatus, setLogInStatus] = useState("");
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
+}
 
-    const buttonClasses = "m-1 p-2 rounded-md bg-pink-700";
+export async function action({ request }: Route.ActionArgs) {
+    const session = await getSession(request.headers.get("Cookie"));
+    const form = await request.formData();
+    const email = form.get("email")?.toString();
+    const password = form.get("password")?.toString();
 
-    const handleSubmit = async (e: React.SubmitEvent) => {
-        e.preventDefault();
-        setLoggedIn(true);
+    async function failure(text: string) {
+        session.flash("error", text);
+        return redirect("/login", {
+            headers: {
+                "Set-Cookie": await commitSession(session),
+            },
+        });
+    }
+
+    if (email && password) {
         try {
             await login(email, password);
-        } catch (e) {
-            if (e instanceof AuthError) {
-                setLogInStatus("Incorrect password.");
-                // todo clear password
+            session.set("loggedIn", "true");
+            return redirect("/", {
+                headers: {
+                    "Set-Cookie": await commitSession(session),
+                },
+            });
+        } catch (error) {
+            if (error instanceof RateLimitError) {
+                return failure("Please wait a few seconds and try again.");
             }
+            if (error instanceof AuthError) {
+                return failure("Incorrect username or password.");
+            }
+            return failure("An unknown error occured.");
         }
+    } else {
+        return failure("Username or password not provided");
+    }
+}
 
-        console.log(email, password);
-    };
-
-    const redirectCreateAccount = async () => {
-        navigate("/create-account");
-    };
+export default function Login({ loaderData }: Route.ComponentProps) {
+    const { error } = loaderData;
+    const navigate = useNavigate();
+    const buttonClasses = "m-1 p-2 rounded-md bg-pink-700";
 
     return (
         <div>
-            <form onSubmit={handleSubmit}>
+            {error ? <div>Error: {error}</div> : null}
+            <form method="POST">
                 <label htmlFor="email">
                     Email:
-                    <input
-                        type="email"
-                        id="email"
-                        name="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                    />
+                    <input type="email" name="email" />
                 </label>
                 <br />
                 <label htmlFor="password">
                     Password:
-                    <input
-                        type="password"
-                        id="password"
-                        name="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                    />
+                    <input type="password" name="password" />
                 </label>
                 <br />
 
                 <input type="submit" value="Login" className={buttonClasses} />
-                <p>Status: {logInStatus}</p>
             </form>
-            <button className={buttonClasses} onClick={redirectCreateAccount}>
+            <button
+                className={buttonClasses}
+                onClick={() => navigate("/create-account")}
+            >
                 Create Account
             </button>
-            <p>Current Status: {loggedIn ? "Logged in" : "Logged out"}</p>
         </div>
     );
 }
