@@ -87,16 +87,32 @@ export default function CreateAccount({ loaderData }: Route.ComponentProps) {
     return (
         <WelcomeContainer>
             <MainForm method="POST">
-                <FormField type="text" name="username" defaultValue={createAccountData?.username}>
+                <FormField
+                    type="text"
+                    name="username"
+                    defaultValue={createAccountData?.username}
+                >
                     Username:
                 </FormField>
-                <FormField type="email" name="email" defaultValue={createAccountData?.email}>
+                <FormField
+                    type="email"
+                    name="email"
+                    defaultValue={createAccountData?.email}
+                >
                     Email:
                 </FormField>
-                <FormField type="password" name="password" defaultValue={createAccountData?.password}>
+                <FormField
+                    type="password"
+                    name="password"
+                    defaultValue={createAccountData?.password}
+                >
                     Password:
                 </FormField>
-                <FormField type="password" name="re-password" defaultValue={createAccountData?.rePassword}>
+                <FormField
+                    type="password"
+                    name="re-password"
+                    defaultValue={createAccountData?.rePassword}
+                >
                     Retype password:
                 </FormField>
                 <PrimaryButton type="submit">Create Account</PrimaryButton>
