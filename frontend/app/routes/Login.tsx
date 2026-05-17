@@ -22,7 +22,7 @@ export async function loader({ request }: Route.LoaderArgs) {
     }
 
     return data(
-        { error: session.get("error") },
+        { error: session.get("error"), loginData: session.get("loginData") },
         {
             headers: {
                 "Set-Cookie": await commitSession(session),
@@ -39,6 +39,7 @@ export async function action({ request }: Route.ActionArgs) {
 
     async function failure(text: string) {
         session.flash("error", text);
+        session.flash("loginData", { email: email, password: password });
         return redirect("/login", {
             headers: {
                 "Set-Cookie": await commitSession(session),
@@ -70,19 +71,26 @@ export async function action({ request }: Route.ActionArgs) {
 }
 
 export default function Login({ loaderData }: Route.ComponentProps) {
-    const { error } = loaderData;
+    const { error, loginData } = loaderData;
     const navigate = useNavigate();
 
     return (
         <WelcomeContainer>
             <MainForm method="POST">
-                <FormField type="email" name="email">
+                <FormField
+                    type="email"
+                    name="email"
+                    defaultValue={loginData?.email}
+                >
                     Email:
                 </FormField>
-                <FormField type="password" name="password">
+                <FormField
+                    type="password"
+                    name="password"
+                    defaultValue={loginData?.password}
+                >
                     Password:
                 </FormField>
-
                 <PrimaryButton type="submit">Login</PrimaryButton>
             </MainForm>
             <ErrorBox text={error} />

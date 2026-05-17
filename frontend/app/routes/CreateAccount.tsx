@@ -22,7 +22,10 @@ export async function loader({ request }: Route.LoaderArgs) {
     }
 
     return data(
-        { error: session.get("error") },
+        {
+            error: session.get("error"),
+            createAccountData: session.get("createAccountData"),
+        },
         {
             headers: {
                 "Set-Cookie": await commitSession(session),
@@ -41,6 +44,12 @@ export async function action({ request }: Route.ActionArgs) {
 
     async function failure(text: string) {
         session.flash("error", text);
+        session.flash("createAccountData", {
+            email: email,
+            password: password,
+            rePassword: rePassword,
+            username: username,
+        });
         return redirect("/create-account", {
             headers: {
                 "Set-Cookie": await commitSession(session),
@@ -72,22 +81,22 @@ export async function action({ request }: Route.ActionArgs) {
 }
 
 export default function CreateAccount({ loaderData }: Route.ComponentProps) {
-    const { error } = loaderData;
+    const { error, createAccountData } = loaderData;
     const navigate = useNavigate();
 
     return (
         <WelcomeContainer>
             <MainForm method="POST">
-                <FormField type="text" name="username">
+                <FormField type="text" name="username" defaultValue={createAccountData?.username}>
                     Username:
                 </FormField>
-                <FormField type="email" name="email">
+                <FormField type="email" name="email" defaultValue={createAccountData?.email}>
                     Email:
                 </FormField>
-                <FormField type="password" name="password">
+                <FormField type="password" name="password" defaultValue={createAccountData?.password}>
                     Password:
                 </FormField>
-                <FormField type="password" name="re-password">
+                <FormField type="password" name="re-password" defaultValue={createAccountData?.rePassword}>
                     Retype password:
                 </FormField>
                 <PrimaryButton type="submit">Create Account</PrimaryButton>

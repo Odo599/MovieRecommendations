@@ -1,11 +1,25 @@
 import { createCookieSessionStorage } from "react-router";
 
+type LoginData = {
+    email?: string;
+    password?: string;
+};
+
+type CreateAccountData = {
+    email?: string;
+    username?: string;
+    password?: string;
+    rePassword?: string;
+};
+
 type SessionData = {
     loggedIn: string;
 };
 
 type SessionFlashData = {
     error: string;
+    loginData: LoginData;
+    createAccountData: CreateAccountData;
 };
 
 const { getSession, commitSession, destroySession } =

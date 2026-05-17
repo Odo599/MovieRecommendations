@@ -4,6 +4,7 @@ type FormFieldProps = {
     type: string;
     name: string;
     children: ReactNode;
+    defaultValue?: string;
 };
 
 export function WelcomeContainer({ children }: { children: ReactNode }) {
@@ -14,7 +15,12 @@ export function WelcomeContainer({ children }: { children: ReactNode }) {
     );
 }
 
-export function FormField({ type, name, children }: FormFieldProps) {
+export function FormField({
+    type,
+    name,
+    children,
+    defaultValue,
+}: FormFieldProps) {
     return (
         <>
             <label
@@ -25,6 +31,7 @@ export function FormField({ type, name, children }: FormFieldProps) {
                 <input
                     type={type}
                     name={name}
+                    defaultValue={defaultValue}
                     className="w-full rounded-md border border-gray-300 text-gray-200 p-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                 />
             </label>
