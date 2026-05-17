@@ -3,8 +3,13 @@ import type { Route } from "./+types/Login";
 import { AuthError, RateLimitError } from "~/lib/errors";
 import { data, redirect, useNavigate } from "react-router";
 import { getSession, commitSession } from "~/lib/sessions.server";
-import PrimaryButton from "~/components/PrimaryButton";
-import SecondaryButton from "~/components/SecondaryButton";
+import { PrimaryButton, SecondaryButton } from "~/components/Buttons";
+import {
+    ErrorBox,
+    FormField,
+    MainForm,
+    WelcomeContainer,
+} from "~/components/FormComponents";
 
 export function meta({}: Route.MetaArgs) {
     return [{ title: "Login" }];
@@ -69,23 +74,21 @@ export default function Login({ loaderData }: Route.ComponentProps) {
     const navigate = useNavigate();
 
     return (
-        <div>
-            {error ? <div>Error: {error}</div> : null}
-            <form method="POST">
-                <label htmlFor="email">
+        <WelcomeContainer>
+            <MainForm method="POST">
+                <FormField type="email" name="email">
                     Email:
-                    <input type="email" name="email" />
-                </label>
-                <br />
-                <label htmlFor="password">
+                </FormField>
+                <FormField type="password" name="password">
                     Password:
-                    <input type="password" name="password" />
-                </label>
-                <br />
+                </FormField>
 
-                <PrimaryButton type="submit" >Login</PrimaryButton>
-            </form>
-            <SecondaryButton onClick={() => navigate("/create-account")}>Create Account</SecondaryButton>
-        </div>
+                <PrimaryButton type="submit">Login</PrimaryButton>
+            </MainForm>
+            <ErrorBox text={error} />
+            <SecondaryButton onClick={() => navigate("/create-account")}>
+                Create Account
+            </SecondaryButton>
+        </WelcomeContainer>
     );
 }

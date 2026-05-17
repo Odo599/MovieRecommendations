@@ -1,11 +1,15 @@
-import FormField from "~/components/FormField";
 import { type Route } from "./+types/CreateAccount";
 import { data, redirect, useNavigate } from "react-router";
 import createAccount from "~/lib/createAccount";
 import { RateLimitError, UserConflictError } from "~/lib/errors";
 import { getSession, commitSession } from "~/lib/sessions.server";
-import PrimaryButton from "~/components/PrimaryButton";
-import SecondaryButton from "~/components/SecondaryButton";
+import { PrimaryButton, SecondaryButton } from "~/components/Buttons";
+import {
+    WelcomeContainer,
+    FormField,
+    MainForm,
+    ErrorBox,
+} from "~/components/FormComponents";
 
 export function meta({}: Route.MetaArgs) {
     return [{ title: "Create Account" }];
@@ -72,9 +76,8 @@ export default function CreateAccount({ loaderData }: Route.ComponentProps) {
     const navigate = useNavigate();
 
     return (
-        <div>
-            {error ? <div>Error: {error}</div> : null}
-            <form method="POST">
+        <WelcomeContainer>
+            <MainForm method="POST">
                 <FormField type="text" name="username">
                     Username:
                 </FormField>
@@ -88,8 +91,11 @@ export default function CreateAccount({ loaderData }: Route.ComponentProps) {
                     Retype password:
                 </FormField>
                 <PrimaryButton type="submit">Create Account</PrimaryButton>
-            </form>
-            <SecondaryButton onClick={() => navigate("/login")}>Login</SecondaryButton>
-        </div>
+            </MainForm>
+            <ErrorBox text={error} />
+            <SecondaryButton onClick={() => navigate("/login")}>
+                Login
+            </SecondaryButton>
+        </WelcomeContainer>
     );
 }
