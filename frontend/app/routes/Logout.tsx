@@ -2,6 +2,11 @@ import { getSession, destroySession } from "~/lib/sessions.server";
 import type { Route } from "./+types/Logout";
 import { Link, redirect } from "react-router";
 
+export async function loader({ request }: Route.LoaderArgs) {
+    const session = await getSession(request.headers.get("Cookie"));
+    if (!session.has("loggedIn")) return redirect("/");
+}
+
 export async function action({ request }: Route.ActionArgs) {
     const session = await getSession(request.headers.get("Cookie"));
     return redirect("/", {
