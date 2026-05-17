@@ -6,4 +6,5 @@ export default [
     route("login", "routes/Login.tsx"),
     route("create-account", "routes/CreateAccount.tsx"),
     route("logout", "routes/Logout.tsx"),
+    route("search/:query", "routes/SearchResults.tsx")
 ] satisfies RouteConfig;
