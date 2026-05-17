@@ -3,6 +3,8 @@ import type { Route } from "./+types/Login";
 import { AuthError, RateLimitError } from "~/lib/errors";
 import { data, redirect, useNavigate } from "react-router";
 import { getSession, commitSession } from "~/lib/sessions.server";
+import PrimaryButton from "~/components/PrimaryButton";
+import SecondaryButton from "~/components/SecondaryButton";
 
 export function meta({}: Route.MetaArgs) {
     return [{ title: "Login" }];
@@ -65,7 +67,6 @@ export async function action({ request }: Route.ActionArgs) {
 export default function Login({ loaderData }: Route.ComponentProps) {
     const { error } = loaderData;
     const navigate = useNavigate();
-    const buttonClasses = "m-1 p-2 rounded-md bg-pink-700";
 
     return (
         <div>
@@ -82,14 +83,9 @@ export default function Login({ loaderData }: Route.ComponentProps) {
                 </label>
                 <br />
 
-                <input type="submit" value="Login" className={buttonClasses} />
+                <PrimaryButton type="submit" >Login</PrimaryButton>
             </form>
-            <button
-                className={buttonClasses}
-                onClick={() => navigate("/create-account")}
-            >
-                Create Account
-            </button>
+            <SecondaryButton onClick={() => navigate("/create-account")}>Create Account</SecondaryButton>
         </div>
     );
 }
