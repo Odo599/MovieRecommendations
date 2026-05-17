@@ -2,7 +2,7 @@ import { getSession, destroySession } from "~/lib/sessions.server";
 import type { Route } from "./+types/Logout";
 import { Link, redirect } from "react-router";
 import { MainForm, WelcomeContainer } from "~/components/FormComponents";
-import { PrimaryButton, PrimaryLinkButton, SecondaryButton } from "~/components/Buttons";
+import { PrimaryLinkButton, SecondaryButton } from "~/components/Buttons";
 
 export async function loader({ request }: Route.LoaderArgs) {
     const session = await getSession(request.headers.get("Cookie"));

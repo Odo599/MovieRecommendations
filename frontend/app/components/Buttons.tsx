@@ -1,4 +1,8 @@
-import type { ButtonHTMLAttributes, LinkHTMLAttributes, ReactNode } from "react";
+import type {
+    ButtonHTMLAttributes,
+    LinkHTMLAttributes,
+    ReactNode,
+} from "react";
 import { Link, type Path } from "react-router";
 
 interface StyledButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
@@ -8,8 +12,7 @@ interface StyledButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 type StyledLinkProps = {
     children: ReactNode;
     to: string | Path;
-}
-
+};
 
 export function PrimaryButton({
     children,
@@ -41,13 +44,12 @@ export function SecondaryButton({
     );
 }
 
-export function PrimaryLinkButton({
-    children,
-    to,
-}: StyledLinkProps) {
+export function PrimaryLinkButton({ children, to }: StyledLinkProps) {
     return (
         <PrimaryButton className="flex">
-            <Link to={to} className="grow">{children}</Link>
+            <Link to={to} className="grow">
+                {children}
+            </Link>
         </PrimaryButton>
-    )
+    );
 }
