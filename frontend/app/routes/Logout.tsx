@@ -6,7 +6,7 @@ import { PrimaryLinkButton, SecondaryButton } from "~/components/Buttons";
 
 export async function loader({ request }: Route.LoaderArgs) {
     const session = await getSession(request.headers.get("Cookie"));
-    if (!session.has("loggedIn")) return redirect("/");
+    if (!session.has("token")) return redirect("/");
 }
 
 export async function action({ request }: Route.ActionArgs) {

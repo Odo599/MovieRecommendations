@@ -1,6 +1,6 @@
 import backendApi from "./api";
 import FormData from "form-data";
-import { AuthError, RateLimitError } from "./errors";
+import { AuthError, RateLimitError, ServerError } from "./errors";
 
 export default async function login(
     email: string,
@@ -12,13 +12,15 @@ export default async function login(
 
     return backendApi
         .post("/api/login", data, {
-            withCredentials: true,
             headers: {
                 "Content-Type": "multipart/form-data",
             },
         })
         .then((response) => {
-            return JSON.stringify(response.data);
+            if (Object.hasOwn(response.data, "access_token")) {
+                return response.data.access_token;
+            }
+            throw new ServerError(response.data);
         })
         .catch((error) => {
             if (error?.response?.status == 429) throw new RateLimitError("");

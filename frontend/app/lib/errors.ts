@@ -38,4 +38,20 @@ class UserConflictError extends Error {
     }
 }
 
-export { AuthError, OfflineError, RateLimitError, UserConflictError };
+class ServerError extends Error {
+    message: string;
+
+    constructor(message: string) {
+        super(message);
+        this.name = "ServerError";
+        this.message = message;
+    }
+}
+
+export {
+    AuthError,
+    OfflineError,
+    RateLimitError,
+    UserConflictError,
+    ServerError,
+};

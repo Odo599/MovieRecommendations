@@ -11,7 +11,7 @@ export function meta({}: Route.MetaArgs) {
 export async function loader({ request }: Route.LoaderArgs) {
     const session = await getSession(request.headers.get("Cookie"));
     return {
-        loggedIn: session.has("loggedIn"),
+        loggedIn: session.has("token"),
     };
 }
 

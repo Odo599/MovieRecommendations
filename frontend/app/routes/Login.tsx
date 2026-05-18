@@ -17,7 +17,7 @@ export function meta({}: Route.MetaArgs) {
 
 export async function loader({ request }: Route.LoaderArgs) {
     const session = await getSession(request.headers.get("Cookie"));
-    if (session.has("loggedIn")) {
+    if (session.has("token")) {
         return redirect("/");
     }
 
@@ -49,8 +49,8 @@ export async function action({ request }: Route.ActionArgs) {
 
     if (email && password) {
         try {
-            await login(email, password);
-            session.set("loggedIn", "true");
+            const token = await login(email, password);
+            session.set("token", token);
             return redirect("/", {
                 headers: {
                     "Set-Cookie": await commitSession(session),
@@ -63,7 +63,7 @@ export async function action({ request }: Route.ActionArgs) {
             if (error instanceof AuthError) {
                 return failure("Incorrect username or password.");
             }
-            return failure("An unknown error occured.");
+            return failure("An unknown error occurred.");
         }
     } else {
         return failure("Username or password not provided");

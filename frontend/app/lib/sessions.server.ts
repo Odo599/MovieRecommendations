@@ -13,7 +13,7 @@ type CreateAccountData = {
 };
 
 type SessionData = {
-    loggedIn: string;
+    token: string;
 };
 
 type SessionFlashData = {

@@ -1,6 +1,6 @@
 import backendApi from "./api";
 import FormData from "form-data";
-import { RateLimitError, UserConflictError } from "./errors";
+import { RateLimitError, ServerError, UserConflictError } from "./errors";
 
 export default async function createAccount(
     username: string,
@@ -20,7 +20,9 @@ export default async function createAccount(
             },
         })
         .then((response) => {
-            return JSON.stringify(response.data);
+            if (Object.hasOwn(response.data, "access_token")) {
+                return response.data.access_token;
+            } else throw new ServerError(response.data);
         })
         .catch((error) => {
             if (error?.response?.status == 429) throw new RateLimitError("");

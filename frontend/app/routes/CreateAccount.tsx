@@ -17,7 +17,7 @@ export function meta({}: Route.MetaArgs) {
 
 export async function loader({ request }: Route.LoaderArgs) {
     const session = await getSession(request.headers.get("Cookie"));
-    if (session.has("loggedIn")) {
+    if (session.has("token")) {
         return redirect("/");
     }
 
@@ -60,8 +60,8 @@ export async function action({ request }: Route.ActionArgs) {
     if (username && email && password && rePassword) {
         if (password == rePassword) {
             try {
-                await createAccount(username, email, password);
-                session.set("loggedIn", "true");
+                const token = await createAccount(username, email, password);
+                session.set("token", token);
                 return redirect("/", {
                     headers: {
                         "Set-Cookie": await commitSession(session),
@@ -74,7 +74,7 @@ export async function action({ request }: Route.ActionArgs) {
                 if (error instanceof UserConflictError) {
                     return failure("Username or email is already in use.");
                 }
-                return failure("An unknown error occured.");
+                return failure("An unknown error occurred.");
             }
         } else return failure("Passwords do not match.");
     } else return failure("Missing a required field.");
