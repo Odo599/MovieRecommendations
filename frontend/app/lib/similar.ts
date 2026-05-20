@@ -1,14 +1,15 @@
-import axios from "axios";
+import backendApi from "./api";
 import { AuthError } from "./errors";
+import { APIMovies } from "./types";
 
-export default async function similar(id: number) {
-    return axios
+export default async function similar(id: number, token: string) {
+    return backendApi
         .get(`/api/movie/${id}/similar`, {
-            withCredentials: true,
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
         })
-        .then((response) => {
-            return JSON.stringify(response.data);
-        })
+        .then((response) => APIMovies.parse(response.data))
         .catch((error) => {
             if (error?.response?.status == 401) {
                 throw new AuthError(JSON.stringify(error.response.body));

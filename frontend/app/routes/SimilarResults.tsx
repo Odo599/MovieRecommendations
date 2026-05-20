@@ -1,11 +1,11 @@
 import { destroySession, getSession } from "~/lib/sessions.server";
-import type { Route } from "./+types/SearchResults";
-import { data, redirect } from "react-router";
+import type { Route } from "./+types/SimilarResults";
+import { data, Navigate, redirect } from "react-router";
 import { commitSession } from "~/lib/sessions.server";
-import search from "~/lib/search";
 import { AuthError } from "~/lib/errors";
 import type { APIMovies } from "~/lib/types";
 import MovieCard from "~/components/MovieCard";
+import similar from "~/lib/similar";
 
 export function meta({}: Route.MetaArgs) {
     // todo show search query in title
@@ -28,13 +28,14 @@ function isLoaderSuccess(obj: any): obj is LoaderSuccess {
 
 export async function loader({ params, request }: Route.LoaderArgs) {
     const session = await getSession(request.headers.get("Cookie"));
-    if (!session.has("token") || params.query == undefined) {
+    if (!session.has("token") || params.id == undefined) {
         return redirect("/");
     }
     const token = session.get("token");
-    if (token == undefined) return redirect("/");
+    const id = Number(params.id);
+    if (token == undefined || Number.isNaN(id)) return redirect("/");
     try {
-        const results = await search(params.query, token);
+        const results = await similar(id, token);
         return data(
             {
                 query: params.query,
@@ -63,19 +64,19 @@ export async function loader({ params, request }: Route.LoaderArgs) {
 
 export default function SearchResults({ loaderData }: Route.ComponentProps) {
     if (isLoaderSuccess(loaderData)) {
-        const { query, results } = loaderData;
+        const { results } = loaderData;
         return (
             <div>
                 {results.results.map((movie) => {
                     return (
                         <div key={movie.id}>
-                            <MovieCard movie={movie} showSimilarLink={true} />
+                            <MovieCard movie={movie} showSimilarLink={false}/>
                         </div>
                     );
                 })}
             </div>
         );
     } else {
-        return <div>{loaderData.error}</div>;
+        return <Navigate to={"/"} replace={true} />;
     }
 }
