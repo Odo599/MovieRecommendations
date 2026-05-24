@@ -8,6 +8,7 @@ from argon2.exceptions import VerifyMismatchError
 import time
 import uuid
 
+
 class PublicWatchlistItem(TypedDict):
     id: uuid.UUID
     movie_id: int
@@ -56,10 +57,9 @@ class WatchlistItem(db.Model):
 
     def to_public_dict(self) -> PublicWatchlistItem:
         return {
-                "id": self.id,
-                "movie_id": self.movie_id,
-                }
-
+            "id": self.id,
+            "movie_id": self.movie_id,
+        }
 
 
 # setup password hasher
@@ -105,6 +105,7 @@ def db_login(email: str, password: str):
         return Status.SUCCESS
     return Status.UNAUTHORISED
 
+
 def db_get_watchlist(email: str) -> List[PublicWatchlistItem]:
     user: User | None = db.session.execute(
         db.select(User).where(User.email == email)
@@ -113,22 +114,31 @@ def db_get_watchlist(email: str) -> List[PublicWatchlistItem]:
     if user is None:
         return []
 
-    return [movie.to_public_dict() for movie in  db.session.scalars(
-        db.select(WatchlistItem).where(WatchlistItem.user_id == user.id)
-    ).all()]
+    return [
+        movie.to_public_dict()
+        for movie in db.session.scalars(
+            db.select(WatchlistItem).where(WatchlistItem.user_id == user.id)
+        ).all()
+    ]
 
-def db_add_to_watchlist(email: str, id: int) -> (
-        tuple[Literal[Status.SUCCESS], PublicWatchlistItem] | 
-        tuple[Literal[Status.CONFLICT] | Literal[Status.UNAUTHORISED], None]):
+
+def db_add_to_watchlist(
+    email: str, id: int
+) -> (
+    tuple[Literal[Status.SUCCESS], PublicWatchlistItem]
+    | tuple[Literal[Status.CONFLICT] | Literal[Status.UNAUTHORISED], None]
+):
     user: User | None = db.session.execute(
-            db.select(User).where(User.email == email)
-            ).scalar_one_or_none()
+        db.select(User).where(User.email == email)
+    ).scalar_one_or_none()
     if user is None:
         return Status.UNAUTHORISED, None
 
     existing_result: ScalarResult[WatchlistItem] = db.session.scalars(
-            db.select(WatchlistItem).where(WatchlistItem.user_id == user.id).where(WatchlistItem.movie_id == id)
-            )
+        db.select(WatchlistItem)
+        .where(WatchlistItem.user_id == user.id)
+        .where(WatchlistItem.movie_id == id)
+    )
 
     existing: list[WatchlistItem] = list(existing_result.all())
 
@@ -141,16 +151,19 @@ def db_add_to_watchlist(email: str, id: int) -> (
     db.session.refresh(item)
     return Status.SUCCESS, item.to_public_dict()
 
+
 def db_remove_from_watchlist(email: str, id: uuid.UUID):
     user: User | None = db.session.execute(
-            db.select(User).where(User.email == email)
-            ).scalar_one_or_none()
+        db.select(User).where(User.email == email)
+    ).scalar_one_or_none()
     if user is None:
         return Status.UNAUTHORISED
 
     current_item: WatchlistItem | None = db.session.execute(
-            db.select(WatchlistItem).where(WatchlistItem.user_id == user.id).where(WatchlistItem.id == id)
-            ).scalar_one_or_none()
+        db.select(WatchlistItem)
+        .where(WatchlistItem.user_id == user.id)
+        .where(WatchlistItem.id == id)
+    ).scalar_one_or_none()
 
     if not current_item:
         return Status.NOT_FOUND
@@ -159,4 +172,3 @@ def db_remove_from_watchlist(email: str, id: uuid.UUID):
     db.session.commit()
 
     return Status.SUCCESS_NO_RESPONSE
-

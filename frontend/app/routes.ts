@@ -7,5 +7,5 @@ export default [
     route("create-account", "routes/CreateAccount.tsx"),
     route("logout", "routes/Logout.tsx"),
     route("search/:query", "routes/SearchResults.tsx"),
-    route("watchlist", "routes/Watchlist.tsx")
+    route("watchlist", "routes/Watchlist.tsx"),
 ] satisfies RouteConfig;

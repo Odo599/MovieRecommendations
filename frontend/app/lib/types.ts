@@ -16,9 +16,9 @@ const APIMovies = z.object({
 const APIWatchlistItem = z.object({
     id: z.string(),
     movie_id: z.number(),
-})
+});
 
-const APIWatchlist = z.array(APIWatchlistItem)
+const APIWatchlist = z.array(APIWatchlistItem);
 
 type APIMovies = z.infer<typeof APIMovies>;
 type APIMovie = z.infer<typeof APIMovie>;

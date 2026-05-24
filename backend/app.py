@@ -12,7 +12,15 @@ from flask_limiter import Limiter, RateLimitExceeded
 from flask_limiter.util import get_remote_address
 import os
 
-from database import db, db_add_user, Status, db_get_watchlist, db_login, db_add_to_watchlist, db_remove_from_watchlist
+from database import (
+    db,
+    db_add_user,
+    Status,
+    db_get_watchlist,
+    db_login,
+    db_add_to_watchlist,
+    db_remove_from_watchlist,
+)
 import tmdb_api as tmdb
 
 app = Flask(__name__)
@@ -44,9 +52,14 @@ with app.app_context():
 def ratelimit_handler(e):
     return jsonify({"msg": str(e)}), 429
 
+
 @app.shell_context_processor
 def make_shell_context():
-    return {"db": db, "db_add_to_watchlist": db_add_to_watchlist, "db_get_watchlist": db_get_watchlist}
+    return {
+        "db": db,
+        "db_add_to_watchlist": db_add_to_watchlist,
+        "db_get_watchlist": db_get_watchlist,
+    }
 
 
 @app.route("/api/login", methods=["POST"])
@@ -166,6 +179,7 @@ def get_watchlist():
     watchlist = db_get_watchlist(email)
     return jsonify(watchlist)
 
+
 @app.post("/api/watchlist/<movie_id_str>")
 @limiter.limit("10 per minute")
 @jwt_required()
@@ -176,18 +190,11 @@ def post_watchlist_item(movie_id_str: str):
         if status == Status.SUCCESS:
             return jsonify(value)
         elif status == Status.CONFLICT:
-            return jsonify({
-                "msg": "movie is already in watchlist"
-                })
+            return jsonify({"msg": "movie is already in watchlist"})
 
     except ValueError:
-        return (
-                jsonify(
-                    {
-                        "msg": "could not parse id as integer"
-                        }
-                    ),400
-                )
+        return (jsonify({"msg": "could not parse id as integer"}), 400)
+
 
 @app.delete("/api/watchlist/<watchlist_id>")
 @limiter.limit("10 per minute")
@@ -198,9 +205,4 @@ def delete_watchlist_item(watchlist_id: str):
         status = db_remove_from_watchlist(email=get_jwt_identity(), id=watchlist_uuid)
         return str(status)
     except ValueError:
-        return (
-                jsonify(
-                    {"msg": "could not parse id as uuid"}
-                    ),400
-                )
-
+        return (jsonify({"msg": "could not parse id as uuid"}), 400)
