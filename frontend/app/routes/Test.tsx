@@ -3,7 +3,6 @@ import type { Route } from "./+types/test.tsx";
 import { useState } from "react";
 import login from "~/lib/login";
 import search from "~/lib/search";
-import similar from "~/lib/similar";
 
 export function meta({}: Route.MetaArgs) {
     return [{ title: "Movie Recommendations" }];
@@ -29,11 +28,6 @@ export default function Test() {
         search("bourne").then(setStatus).catch(errorHandler);
     };
 
-    const onClickSimilar = () => {
-        setStatus("loading...");
-        similar(603).then(setStatus).catch(errorHandler);
-    };
-
     const onClickInfo = () => {
         setStatus("loading...");
         info(603).then(setStatus).catch(errorHandler);
@@ -48,9 +42,6 @@ export default function Test() {
             </button>
             <button className={buttonClasses} onClick={onClickSearch}>
                 Search
-            </button>
-            <button className={buttonClasses} onClick={onClickSimilar}>
-                Similar
             </button>
             <button className={buttonClasses} onClick={onClickInfo}>
                 Info

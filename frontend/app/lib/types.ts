@@ -13,7 +13,16 @@ const APIMovies = z.object({
     results: z.array(APIMovie),
 });
 
+const APIWatchlistItem = z.object({
+    id: z.string(),
+    movie_id: z.number(),
+})
+
+const APIWatchlist = z.array(APIWatchlistItem)
+
 type APIMovies = z.infer<typeof APIMovies>;
 type APIMovie = z.infer<typeof APIMovie>;
+type APIWatchlist = z.infer<typeof APIWatchlist>;
+type APIWatchlistItem = z.infer<typeof APIWatchlistItem>;
 
-export { APIMovies, APIMovie };
+export { APIMovies, APIMovie, APIWatchlist, APIWatchlistItem };

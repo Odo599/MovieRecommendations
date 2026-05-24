@@ -18,9 +18,5 @@ def get_movie_details(id: int):
     return tmdb.Movies(id).info()
 
 
-def get_similar_movies(id: int):
-    return tmdb.Movies(id).similar_movies()
-
-
 def search(query: str):
     return tmdb.Search().movie(query=query)
