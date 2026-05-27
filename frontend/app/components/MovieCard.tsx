@@ -1,24 +1,35 @@
-import { Link } from "react-router";
 import type { APIMovie } from "~/lib/types";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 type MovieCardProps = {
     movie: APIMovie;
-    showSimilarLink: boolean;
+    onAddToWatchlist: (id: number) => void;
+    onRemoveFromWatchlist: (id: string) => void;
 };
 
-export default function MovieCard({ movie, showSimilarLink }: MovieCardProps) {
+export default function MovieCard({
+    movie,
+    onAddToWatchlist,
+    onRemoveFromWatchlist,
+}: MovieCardProps) {
+    const onClick = () => {
+        if (movie.in_watchlist && movie.watchlist_id) {
+            onRemoveFromWatchlist(movie.watchlist_id);
+        } else {
+            onAddToWatchlist(movie.id);
+        }
+    };
     return (
-        <div className="m-4 p-2 border-2 border-pink-700 rounded-lg">
+        <div className="mx-4 p-2 border-b-2 border-pink-700">
             <div className="flex gap-4">
                 <div className="text-xl">{movie.title}</div>
-                {showSimilarLink && (
-                    <Link
-                        to={`/similar/${movie.id}`}
-                        className="p-1 border border-pink-500 rounded-md"
-                    >
-                        Similar
-                    </Link>
-                )}
+                <button onClick={onClick} className="p-1 rounded-md ml-auto">
+                    {movie.in_watchlist ? (
+                        <FontAwesomeIcon icon={["fas", "check"]} />
+                    ) : (
+                        <FontAwesomeIcon icon={["far", "circle"]} />
+                    )}
+                </button>
             </div>
             <div className="text-sm">{movie.overview}</div>
         </div>

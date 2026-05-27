@@ -16,6 +16,7 @@ from database import (
     db,
     db_add_user,
     Status,
+    db_get_search,
     db_get_watchlist,
     db_login,
     db_add_to_watchlist,
@@ -145,7 +146,7 @@ def movie_search():
             400,
         )
 
-    results = tmdb.search(query)
+    results = db_get_search(query, get_jwt_identity())
 
     return jsonify(results), 200
 
@@ -203,6 +204,12 @@ def delete_watchlist_item(watchlist_id: str):
     try:
         watchlist_uuid = UUID(watchlist_id)
         status = db_remove_from_watchlist(email=get_jwt_identity(), id=watchlist_uuid)
-        return str(status)
+        if status == Status.UNAUTHORISED:
+            return jsonify({"msg": "user not found"}), 401
+        elif status == Status.NOT_FOUND:
+            return jsonify({"msg": "watchlist item not found", "id": watchlist_uuid})
+        else:
+            return "", 204
+
     except ValueError:
         return (jsonify({"msg": "could not parse id as uuid"}), 400)

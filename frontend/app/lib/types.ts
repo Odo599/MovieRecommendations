@@ -1,21 +1,25 @@
 import * as z from "zod";
 
 const APIMovie = z.object({
-    genre_ids: z.array(z.number()),
     id: z.number(),
     overview: z.string(),
     release_date: z.string(),
     title: z.string(),
+    in_watchlist: z.boolean(),
+    watchlist_id: z.string().nullable(),
 });
 
-const APIMovies = z.object({
-    page: z.number(),
-    results: z.array(APIMovie),
-});
+const APIMovies = z.array(APIMovie);
 
 const APIWatchlistItem = z.object({
     id: z.string(),
     movie_id: z.number(),
+    details: z.object({
+        id: z.number(),
+        overview: z.string(),
+        release_date: z.string(),
+        title: z.string(),
+    }),
 });
 
 const APIWatchlist = z.array(APIWatchlistItem);

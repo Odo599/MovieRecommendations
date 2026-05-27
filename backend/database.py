@@ -7,6 +7,7 @@ from argon2 import PasswordHasher
 from argon2.exceptions import VerifyMismatchError
 import time
 import uuid
+import tmdb_api
 
 
 class PublicWatchlistItem(TypedDict):
@@ -106,7 +107,29 @@ def db_login(email: str, password: str):
     return Status.UNAUTHORISED
 
 
-def db_get_watchlist(email: str) -> List[PublicWatchlistItem]:
+def db_get_search(query: str, email: str):
+    results = tmdb_api.search(query)
+    watchlist = db_get_raw_watchlist(email)
+    added_data = []
+    for movie in results.results:
+        in_watchlist = False
+        watchlist_id: uuid.UUID | None = None
+        for watchlist_item in watchlist:
+            if movie.id == watchlist_item.movie_id:
+                in_watchlist = True
+                watchlist_id = watchlist_item.id
+        added_data.append(
+            {
+                **movie.model_dump(),
+                "in_watchlist": in_watchlist,
+                "watchlist_id": watchlist_id,
+            }
+        )
+
+    return added_data
+
+
+def db_get_raw_watchlist(email: str) -> list[WatchlistItem]:
     user: User | None = db.session.execute(
         db.select(User).where(User.email == email)
     ).scalar_one_or_none()
@@ -114,12 +137,23 @@ def db_get_watchlist(email: str) -> List[PublicWatchlistItem]:
     if user is None:
         return []
 
-    return [
-        movie.to_public_dict()
-        for movie in db.session.scalars(
+    return list(
+        db.session.scalars(
             db.select(WatchlistItem).where(WatchlistItem.user_id == user.id)
         ).all()
-    ]
+    )
+
+
+def db_get_watchlist(email: str) -> List[PublicWatchlistItem]:
+    watchlist_items = [movie.to_public_dict() for movie in db_get_raw_watchlist(email)]
+
+    return_items = []
+
+    for watchlist_item in watchlist_items:
+        details = tmdb_api.get_movie_details(watchlist_item["movie_id"]).model_dump()
+        return_items.append({**watchlist_item, "details": details})
+
+    return return_items
 
 
 def db_add_to_watchlist(
