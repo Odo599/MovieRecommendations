@@ -8,6 +8,7 @@ import type { APIMovies } from "~/lib/types";
 import MovieCard from "~/components/MovieCard";
 import addWatchlistItem from "~/lib/addWatchlistItem";
 import deleteWatchlistItem from "~/lib/deleteWatchlistItem";
+import HeaderText from "~/components/HeaderText";
 
 export function meta({}: Route.MetaArgs) {
     // todo show search query in title
@@ -80,11 +81,12 @@ export async function action({ request }: Route.ActionArgs) {
 
 export default function SearchResults({ loaderData }: Route.ComponentProps) {
     if (isLoaderSuccess(loaderData)) {
-        const { results } = loaderData;
+        const { results, query } = loaderData;
         const fetcher = useFetcher();
 
         return (
             <div className="mb-4">
+                <HeaderText text={`Search results for ${query}.`} />
                 {results.map((movie) => {
                     return (
                         <div key={movie.id}>

@@ -9,6 +9,7 @@ import getWatchlist from "~/lib/getWatchlist";
 import { AuthError } from "~/lib/errors";
 import WatchlistCard from "~/components/WatchlistCard";
 import deleteWatchlistItem from "~/lib/deleteWatchlistItem";
+import HeaderText from "~/components/HeaderText";
 
 export function meta() {
     return [{ title: "Watchlist" }];
@@ -78,7 +79,8 @@ export default function Watchlist({ loaderData }: Route.ComponentProps) {
 
     if (success && watchlist !== null) {
         return (
-            <div>
+            <div className="mb-4">
+                <HeaderText text="Your Watchlist" />
                 {watchlist.map((movie) => {
                     return (
                         <div key={movie.id}>

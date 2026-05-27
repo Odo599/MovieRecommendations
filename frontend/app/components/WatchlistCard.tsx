@@ -9,7 +9,7 @@ type WatchlistCardProps = {
 export default function WatchlistCard({ movie, onDelete }: WatchlistCardProps) {
     const _onDelete = () => onDelete(movie.id);
     return (
-        <div className="m-4 p-2 border-2 border-pink-700 rounded-lg">
+        <div className="mx-4 p-2 border-b-2 border-pink-700">
             <div className="flex gap-4">
                 <div className="text-xl">{movie.details.title}</div>
                 <button className="ml-auto" onClick={_onDelete}>
