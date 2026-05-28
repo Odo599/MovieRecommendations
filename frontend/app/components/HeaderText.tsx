@@ -5,7 +5,7 @@ export default function HeaderText({ text }: { text: string }) {
     return (
         <div className="flex items-center px-6">
             <div className="flex-1">
-                <Link to={".."}>
+                <Link to={".."} viewTransition>
                     <FontAwesomeIcon icon={["fas", "arrow-left"]} width={16} />
                 </Link>
             </div>

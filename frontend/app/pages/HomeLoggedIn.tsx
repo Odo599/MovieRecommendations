@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
 import SearchBar from "~/components/SearchBar";
 
 export default function HomeLoggedIn() {
@@ -15,12 +15,14 @@ export default function HomeLoggedIn() {
         <>
             <div className="p-[20px] flex md:flex-row justify-end gap-4 ">
                 <p className="mr-auto">Movies</p>
-                <button
-                    onClick={() => navigate("/watchlist")}
+                <Link
+                    to={"/watchlist"}
+                    prefix="intent"
+                    viewTransition
                     className="rounded-md bg-teal-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-teal-700"
                 >
                     Watchlist
-                </button>
+                </Link>
             </div>
             <div className="flex flex-col items-center h-screen">
                 <SearchBar onSubmit={onSearch} />
