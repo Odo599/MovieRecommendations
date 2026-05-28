@@ -4,13 +4,27 @@ import SearchBar from "~/components/SearchBar";
 export default function HomeLoggedIn() {
     const navigate = useNavigate();
     const onSearch = (query: string) => {
-        console.log(`/search/${query}`);
-        navigate(`/search/${query}`);
+        if (query !== "") {
+            navigate(`/search/${query}`);
+        } else {
+            console.warn("tried to search without a query");
+        }
     };
 
     return (
-        <div className="flex flex-col items-center justify-center h-screen">
-            <SearchBar onSubmit={onSearch} />
-        </div>
+        <>
+            <div className="p-[20px] flex md:flex-row justify-end gap-4 ">
+                <p className="mr-auto">Movies</p>
+                <button
+                    onClick={() => navigate("/watchlist")}
+                    className="rounded-md bg-teal-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-teal-700"
+                >
+                    Watchlist
+                </button>
+            </div>
+            <div className="flex flex-col items-center h-screen">
+                <SearchBar onSubmit={onSearch} />
+            </div>
+        </>
     );
 }
