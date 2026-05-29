@@ -10,6 +10,7 @@ type CreateAccountData = {
     username?: string;
     password?: string;
     rePassword?: string;
+    countryCode?: string;
 };
 
 type SessionData = {

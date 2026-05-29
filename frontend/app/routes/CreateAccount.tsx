@@ -41,6 +41,7 @@ export async function action({ request }: Route.ActionArgs) {
     const email = form.get("email")?.toString();
     const password = form.get("password")?.toString();
     const rePassword = form.get("re-password")?.toString();
+    const countryCode = form.get("country-code")?.toString();
 
     async function failure(text: string) {
         session.flash("error", text);
@@ -49,6 +50,7 @@ export async function action({ request }: Route.ActionArgs) {
             password: password,
             rePassword: rePassword,
             username: username,
+            countryCode: countryCode,
         });
         return redirect("/create-account", {
             headers: {
@@ -57,10 +59,17 @@ export async function action({ request }: Route.ActionArgs) {
         });
     }
 
-    if (username && email && password && rePassword) {
+    if (username && email && password && rePassword && countryCode) {
+        if (countryCode.length !== 2)
+            return failure("The country code must be two letters");
         if (password == rePassword) {
             try {
-                const token = await createAccount(username, email, password);
+                const token = await createAccount(
+                    username,
+                    email,
+                    password,
+                    countryCode.toUpperCase()
+                );
                 session.set("token", token);
                 return redirect("/", {
                     headers: {
@@ -115,6 +124,14 @@ export default function CreateAccount({ loaderData }: Route.ComponentProps) {
                 >
                     Retype password:
                 </FormField>
+                <FormField
+                    type="text"
+                    name="country-code"
+                    defaultValue={createAccountData?.country_code}
+                >
+                    Enter your country code
+                </FormField>
+
                 <PrimaryButton type="submit">Create Account</PrimaryButton>
             </MainForm>
             <ErrorBox text={error} />

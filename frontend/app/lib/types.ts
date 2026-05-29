@@ -20,6 +20,7 @@ const APIWatchlistItem = z.object({
         release_date: z.string(),
         title: z.string(),
     }),
+    watch_providers: z.array(z.string()),
 });
 
 const APIWatchlist = z.array(APIWatchlistItem);

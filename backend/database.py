@@ -37,12 +37,16 @@ class User(db.Model):
     username: Mapped[str] = mapped_column(unique=True)
     email: Mapped[str] = mapped_column(unique=True)
     phash: Mapped[str] = mapped_column(unique=True)
+    country_code: Mapped[str] = mapped_column()
 
-    def __init__(self, username: str, email: str, phash: str) -> None:
+    def __init__(
+        self, username: str, email: str, phash: str, country_code: str
+    ) -> None:
         super().__init__()
         self.username = username
         self.email = email
         self.phash = phash
+        self.country_code = country_code
 
 
 class WatchlistItem(db.Model):
@@ -76,7 +80,7 @@ def check_hash(hash: str, password: str):
 
 
 # functions
-def db_add_user(username: str, email: str, password: str):
+def db_add_user(username: str, email: str, password: str, country_code: str):
     existing = db.session.execute(
         db.select(User).where(or_(User.username == username, User.email == email))
     ).scalar_one_or_none()
@@ -86,7 +90,7 @@ def db_add_user(username: str, email: str, password: str):
 
     phash = ph.hash(password)
 
-    user = User(username=username, email=email, phash=phash)
+    user = User(username=username, email=email, phash=phash, country_code=country_code)
     db.session.add(user)
     db.session.commit()
 
@@ -144,14 +148,30 @@ def db_get_raw_watchlist(email: str) -> list[WatchlistItem]:
     )
 
 
-def db_get_watchlist(email: str) -> List[PublicWatchlistItem]:
+def db_get_watchlist(
+    email: str,
+) -> List[PublicWatchlistItem] | Literal[Status.UNAUTHORISED]:
     watchlist_items = [movie.to_public_dict() for movie in db_get_raw_watchlist(email)]
+    user: User | None = db.session.execute(
+        db.select(User).where(User.email == email)
+    ).scalar_one_or_none()
+    if user == None:
+        return Status.UNAUTHORISED
 
     return_items = []
 
     for watchlist_item in watchlist_items:
         details = tmdb_api.get_movie_details(watchlist_item["movie_id"]).model_dump()
-        return_items.append({**watchlist_item, "details": details})
+        watch_providers = tmdb_api.get_movie_watch_providers(
+            watchlist_item["movie_id"], user.country_code
+        )
+        return_items.append(
+            {
+                **watchlist_item,
+                "details": details,
+                "watch_providers": watch_providers,
+            }
+        )
 
     return return_items
 

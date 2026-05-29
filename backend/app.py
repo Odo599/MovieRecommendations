@@ -27,7 +27,7 @@ import tmdb_api as tmdb
 app = Flask(__name__)
 
 app.config.update(
-    JWT_SECRET_KEY=os.environ.get("JWT_SECRET", "change-me"),
+    JWT_SECRET_KEY=os.environ["JWT_SECRET"],
     JWT_ACCESS_TOKEN_EXPIRES=timedelta(hours=10),
     JWT_TOKEN_LOCATION=["headers"],
     SQLALCHEMY_DATABASE_URI="sqlite:///movies.db",
@@ -105,8 +105,9 @@ def user_create():
     username = request.form["username"]
     email = request.form["email"]
     password = request.form["password"]
+    country_code = request.form["country_code"]
 
-    status = db_add_user(username, email, password)
+    status = db_add_user(username, email, password, country_code)
 
     if status == Status.CONFLICT:
         return (

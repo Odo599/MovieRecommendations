@@ -5,12 +5,14 @@ import { RateLimitError, ServerError, UserConflictError } from "./errors";
 export default async function createAccount(
     username: string,
     email: string,
-    password: string
+    password: string,
+    countryCode: string
 ): Promise<string> {
     let data = new FormData();
     data.append("email", email);
     data.append("password", password);
     data.append("username", username);
+    data.append("country_code", countryCode);
 
     return backendApi
         .post("/api/users/create", data, {
