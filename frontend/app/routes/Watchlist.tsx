@@ -10,6 +10,8 @@ import { AuthError } from "~/lib/errors";
 import WatchlistCard from "~/components/WatchlistCard";
 import deleteWatchlistItem from "~/lib/deleteWatchlistItem";
 import HeaderText from "~/components/HeaderText";
+import DropDown from "~/components/DropDown";
+import { useMemo, useState } from "react";
 
 export function meta() {
     return [{ title: "Watchlist" }];
@@ -74,15 +76,40 @@ export async function action({ request }: Route.ActionArgs) {
 }
 
 export default function Watchlist({ loaderData }: Route.ComponentProps) {
-    const fetcher = useFetcher();
     const { watchlist, success } = loaderData;
 
     if (success && watchlist !== null) {
+        const fetcher = useFetcher();
+        const [chosenProviders, setChosenProviders] = useState<string[]>([]);
+        const providers = useMemo(() => {
+            const list: string[] = [];
+            loaderData.watchlist.forEach((movie) => {
+                movie.watch_providers.forEach((provider) => {
+                    list.push(provider);
+                });
+            });
+            return [...new Set(list)];
+        }, [loaderData]);
+
         return (
             <div className="mb-4">
                 <HeaderText text="Your Watchlist" />
-                {watchlist.map((movie) => {
-                    return (
+                <DropDown
+                    onChange={(values) => setChosenProviders(values)}
+                    items={providers}
+                />
+                {watchlist
+                    .filter((movie) =>
+                        chosenProviders.length > 0
+                            ? movie.watch_providers.some((provider) =>
+                                  chosenProviders.some(
+                                      (chosenProvider) =>
+                                          provider == chosenProvider
+                                  )
+                              )
+                            : true
+                    )
+                    .map((movie) => (
                         <div key={movie.id}>
                             <WatchlistCard
                                 movie={movie}
@@ -94,15 +121,10 @@ export default function Watchlist({ loaderData }: Route.ComponentProps) {
                                 }
                             />
                         </div>
-                    );
-                })}
+                    ))}
             </div>
         );
     } else {
-        return (
-            <div>
-                Unfortunately, something went wrong.
-            </div>
-        );
+        return <div>Unfortunately, something went wrong.</div>;
     }
 }
