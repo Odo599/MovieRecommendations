@@ -12,6 +12,7 @@ import deleteWatchlistItem from "~/lib/deleteWatchlistItem";
 import HeaderText from "~/components/HeaderText";
 import DropDown from "~/components/DropDown";
 import { useMemo, useState } from "react";
+import type { APIWatchProvider } from "~/lib/types";
 
 export function meta() {
     return [{ title: "Watchlist" }];
@@ -85,7 +86,7 @@ export default function Watchlist({ loaderData }: Route.ComponentProps) {
             const list: string[] = [];
             loaderData.watchlist.forEach((movie) => {
                 movie.watch_providers.forEach((provider) => {
-                    list.push(provider);
+                    list.push(provider.name);
                 });
             });
             return [...new Set(list)];
@@ -104,7 +105,7 @@ export default function Watchlist({ loaderData }: Route.ComponentProps) {
                             ? movie.watch_providers.some((provider) =>
                                   chosenProviders.some(
                                       (chosenProvider) =>
-                                          provider == chosenProvider
+                                          provider.name == chosenProvider
                                   )
                               )
                             : true

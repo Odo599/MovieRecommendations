@@ -162,9 +162,12 @@ def db_get_watchlist(
 
     for watchlist_item in watchlist_items:
         details = tmdb_api.get_movie_details(watchlist_item["movie_id"]).model_dump()
-        watch_providers = tmdb_api.get_movie_watch_providers(
-            watchlist_item["movie_id"], user.country_code
-        )
+        watch_providers = [
+            x.model_dump()
+            for x in tmdb_api.get_movie_watch_providers(
+                watchlist_item["movie_id"], user.country_code
+            )
+        ]
         return_items.append(
             {
                 **watchlist_item,

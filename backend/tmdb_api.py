@@ -1,4 +1,3 @@
-from typing import Optional
 import tmdbsimple as tmdb
 import os
 from dotenv import load_dotenv
@@ -38,6 +37,7 @@ class MovieSearchResults(BaseModel):
 class Provider(BaseModel):
     provider_id: int
     provider_name: str
+    logo_path: str
 
 
 class CountryWatchProviders(BaseModel):
@@ -52,12 +52,20 @@ class MovieWatchProviders(BaseModel):
     results: dict[str, CountryWatchProviders]
 
 
+class PublicMovieWatchProvider(BaseModel):
+    icon_path: str
+    name: str
+    availability_type: str
+
+
 def get_movie_details(id: int):
     results = tmdb.Movies(id).info()
     return MovieDetails(**results)
 
 
-def _clean_watch_providers(providers: CountryWatchProviders) -> list[str]:
+def _clean_watch_providers(
+    providers: CountryWatchProviders,
+) -> list[PublicMovieWatchProvider]:
     mapping = {
         "Paramount+ Amazon Channel": "Paramount+",
         "Paramount Plus": "Paramount+",
@@ -66,19 +74,30 @@ def _clean_watch_providers(providers: CountryWatchProviders) -> list[str]:
         "Amazon Prime Video with Ads": "Amazon Prime",
         "HBO Max Amazon Channel": "HBO Max",
         "Foxtel Now": "Foxtel",
-        "SBS On Demand": "SBS"
+        "SBS On Demand": "SBS",
     }
-    result = []
-    for plist in [providers.flatrate, providers.free, providers.ads]:
+    result: list[PublicMovieWatchProvider] = []
+    availability_type_lookup = ["flatrate", "free", "ads"]
+    for index, plist in enumerate([providers.flatrate, providers.free, providers.ads]):
         for provider in plist:
             if provider.provider_name in mapping:
-                result.append(mapping[provider.provider_name])
+                name = mapping[provider.provider_name]
             else:
-                result.append(provider.provider_name)
-    return list(set(result))
+                name = provider.provider_name
+            result.append(
+                PublicMovieWatchProvider(
+                    icon_path=provider.logo_path,
+                    name=name,
+                    availability_type=availability_type_lookup[index],
+                )
+            )
+    seen = set()
+    return [x for x in result if not (x.name in seen or seen.add(x.name))]
 
 
-def get_movie_watch_providers(id: int, country_code: str):
+def get_movie_watch_providers(
+    id: int, country_code: str
+) -> list[PublicMovieWatchProvider]:
     results = MovieWatchProviders(**tmdb.Movies(id).watch_providers())
     if country_code in results.results:
         return _clean_watch_providers(results.results[country_code])
