@@ -6,8 +6,9 @@ function WatchProviderTag({
     watchProvider: APIWatchProvider;
 }) {
     return (
-        <div className="rounded-lg bg-red-500 text-center text-sm inline-block m-1 px-2 py-1">
-            {watchProvider.name}
+        <div className="rounded-lg bg-red-500 text-center text-sm inline-flex m-1 px-2 py-1 flex items-center gap-2">
+            <img height="24" width="24" src={`https://media.themoviedb.org/t/p/original${watchProvider.icon_path}`} />
+            {watchProvider.name} 
         </div>
     );
 }
