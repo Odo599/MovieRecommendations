@@ -1,8 +1,4 @@
-import type {
-    ButtonHTMLAttributes,
-    LinkHTMLAttributes,
-    ReactNode,
-} from "react";
+import type { ButtonHTMLAttributes, ReactNode } from "react";
 import { Link, type Path } from "react-router";
 
 interface StyledButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {

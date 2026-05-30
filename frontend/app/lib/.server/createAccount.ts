@@ -8,7 +8,7 @@ export default async function createAccount(
     password: string,
     countryCode: string
 ): Promise<string> {
-    let data = new FormData();
+    const data = new FormData();
     data.append("email", email);
     data.append("password", password);
     data.append("username", username);

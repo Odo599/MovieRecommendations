@@ -4,7 +4,7 @@ import HomeLoggedOut from "~/pages/HomeLoggedOut";
 import { getSession } from "~/lib/.server/sessions";
 import { useLoaderData } from "react-router";
 
-export function meta({}: Route.MetaArgs) {
+export function meta() {
     return [{ title: "Movie Recommendations" }];
 }
 

@@ -13,7 +13,7 @@ import addWatchlistItem from "~/lib/.server/addWatchlistItem";
 import deleteWatchlistItem from "~/lib/.server/deleteWatchlistItem";
 import HeaderText from "~/components/HeaderText";
 
-export function meta({}: Route.MetaArgs) {
+export function meta() {
     // todo show search query in title
     return [{ title: "Movie Recommendations" }];
 }
@@ -23,7 +23,7 @@ interface LoaderSuccess {
     results: APIMovies;
 }
 
-function isLoaderSuccess(obj: any): obj is LoaderSuccess {
+function isLoaderSuccess(obj: unknown): obj is LoaderSuccess {
     return (
         obj !== null &&
         typeof obj === "object" &&

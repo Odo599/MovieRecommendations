@@ -11,7 +11,7 @@ import {
     WelcomeContainer,
 } from "~/components/FormComponents";
 
-export function meta({}: Route.MetaArgs) {
+export function meta() {
     return [{ title: "Login" }];
 }
 

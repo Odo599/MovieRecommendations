@@ -6,7 +6,7 @@ export default async function login(
     email: string,
     password: string
 ): Promise<string> {
-    let data = new FormData();
+    const data = new FormData();
     data.append("email", email);
     data.append("password", password);
 
