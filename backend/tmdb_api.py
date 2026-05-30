@@ -59,10 +59,13 @@ def _clean_watch_providers(providers: list[Provider] | None) -> list[str]:
     if providers == None:
         return []
     mapping = {
-        "Paramount+ Amazon Channel": "Paramount Plus",
+        "Paramount+ Amazon Channel": "Paramount+",
+        "Paramount Plus": "Paramount+",
         "Netflix Standard with Ads": "Netflix",
-        "Amazon Prime Video with Ads": "Amazon Prime Video",
+        "Amazon Prime Video": "Amazon Prime",
+        "Amazon Prime Video with Ads": "Amazon Prime",
         "HBO Max Amazon Channel": "HBO Max",
+        "Foxtel Now": "Foxtel"
     }
     result = []
     for provider in providers:

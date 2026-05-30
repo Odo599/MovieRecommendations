@@ -75,7 +75,7 @@ export async function action({ request }: Route.ActionArgs) {
 
 export default function Watchlist({ loaderData }: Route.ComponentProps) {
     const fetcher = useFetcher();
-    const { watchlist, success, error } = loaderData;
+    const { watchlist, success } = loaderData;
 
     if (success && watchlist !== null) {
         return (
@@ -102,7 +102,6 @@ export default function Watchlist({ loaderData }: Route.ComponentProps) {
         return (
             <div>
                 Unfortunately, something went wrong.
-                {error}
             </div>
         );
     }
