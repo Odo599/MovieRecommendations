@@ -1,6 +1,6 @@
 import backendApi from "./api";
-import { AuthError } from "./errors";
-import { APIWatchlist } from "./types";
+import { AuthError } from "../errors";
+import { APIWatchlist } from "../types";
 
 export default async function getWatchlist(token: string) {
     return backendApi

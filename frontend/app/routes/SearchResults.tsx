@@ -1,13 +1,16 @@
-import { destroySession, getSession } from "~/lib/sessions.server";
+import {
+    destroySession,
+    getSession,
+    commitSession,
+} from "~/lib/.server/sessions";
 import type { Route } from "./+types/SearchResults";
 import { data, redirect, useFetcher } from "react-router";
-import { commitSession } from "~/lib/sessions.server";
-import search from "~/lib/search";
+import search from "~/lib/.server/search";
 import { AuthError } from "~/lib/errors";
 import type { APIMovies } from "~/lib/types";
 import MovieCard from "~/components/MovieCard";
-import addWatchlistItem from "~/lib/addWatchlistItem";
-import deleteWatchlistItem from "~/lib/deleteWatchlistItem";
+import addWatchlistItem from "~/lib/.server/addWatchlistItem";
+import deleteWatchlistItem from "~/lib/.server/deleteWatchlistItem";
 import HeaderText from "~/components/HeaderText";
 
 export function meta({}: Route.MetaArgs) {

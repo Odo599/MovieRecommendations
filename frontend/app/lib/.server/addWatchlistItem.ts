@@ -1,5 +1,5 @@
 import backendApi from "./api";
-import { AuthError } from "./errors";
+import { AuthError } from "../errors";
 
 export default async function addWatchlistItem(id: number, token: string) {
     backendApi

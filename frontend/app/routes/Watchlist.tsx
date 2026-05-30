@@ -2,17 +2,16 @@ import {
     commitSession,
     destroySession,
     getSession,
-} from "~/lib/sessions.server";
+} from "~/lib/.server/sessions";
 import type { Route } from "./+types/Watchlist";
 import { data, redirect, useFetcher } from "react-router";
-import getWatchlist from "~/lib/getWatchlist";
+import getWatchlist from "~/lib/.server/getWatchlist";
 import { AuthError } from "~/lib/errors";
 import WatchlistCard from "~/components/WatchlistCard";
-import deleteWatchlistItem from "~/lib/deleteWatchlistItem";
+import deleteWatchlistItem from "~/lib/.server/deleteWatchlistItem";
 import HeaderText from "~/components/HeaderText";
 import DropDown from "~/components/DropDown";
 import { useMemo, useState } from "react";
-import type { APIWatchProvider } from "~/lib/types";
 
 export function meta() {
     return [{ title: "Watchlist" }];

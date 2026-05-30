@@ -1,6 +1,6 @@
-import { getSession, destroySession } from "~/lib/sessions.server";
+import { getSession, destroySession } from "~/lib/.server/sessions";
 import type { Route } from "./+types/Logout";
-import { Link, redirect } from "react-router";
+import { redirect } from "react-router";
 import { MainForm, WelcomeContainer } from "~/components/FormComponents";
 import { PrimaryLinkButton, SecondaryButton } from "~/components/Buttons";
 

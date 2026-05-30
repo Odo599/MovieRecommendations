@@ -1,8 +1,8 @@
-import login from "~/lib/login";
+import login from "~/lib/.server/login";
 import type { Route } from "./+types/Login";
 import { AuthError, RateLimitError } from "~/lib/errors";
 import { data, redirect, useNavigate } from "react-router";
-import { getSession, commitSession } from "~/lib/sessions.server";
+import { getSession, commitSession } from "~/lib/.server/sessions";
 import { PrimaryButton, SecondaryButton } from "~/components/Buttons";
 import {
     ErrorBox,

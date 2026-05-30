@@ -1,7 +1,7 @@
 import type { Route } from "./+types/home";
 import HomeLoggedIn from "~/pages/HomeLoggedIn";
 import HomeLoggedOut from "~/pages/HomeLoggedOut";
-import { getSession } from "~/lib/sessions.server";
+import { getSession } from "~/lib/.server/sessions";
 import { useLoaderData } from "react-router";
 
 export function meta({}: Route.MetaArgs) {

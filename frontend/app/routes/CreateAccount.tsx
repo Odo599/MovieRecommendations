@@ -1,8 +1,8 @@
 import { type Route } from "./+types/CreateAccount";
 import { data, redirect, useNavigate } from "react-router";
-import createAccount from "~/lib/createAccount";
+import createAccount from "~/lib/.server/createAccount";
 import { RateLimitError, UserConflictError } from "~/lib/errors";
-import { getSession, commitSession } from "~/lib/sessions.server";
+import { getSession, commitSession } from "~/lib/.server/sessions";
 import { PrimaryButton, SecondaryButton } from "~/components/Buttons";
 import {
     WelcomeContainer,

@@ -1,7 +1,7 @@
 import z from "zod";
 import backendApi from "./api";
-import { AuthError, ServerError } from "./errors";
-import { APIMovies } from "./types";
+import { AuthError, ServerError } from "../errors";
+import { APIMovies } from "../types";
 
 export default async function search(
     query: string,
