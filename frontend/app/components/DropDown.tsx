@@ -90,6 +90,7 @@ export default function DropDown({
             >
                 {chosenItems.map((item) => (
                     <button
+                        key={item}
                         className="bg-gray-900 p-1"
                         onClick={() =>
                             setChosenItems((prev) =>
