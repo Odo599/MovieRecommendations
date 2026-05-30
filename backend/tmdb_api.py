@@ -42,7 +42,9 @@ class Provider(BaseModel):
 
 class CountryWatchProviders(BaseModel):
     link: str
-    flatrate: Optional[list[Provider]] = []
+    flatrate: list[Provider] = []
+    free: list[Provider] = []
+    ads: list[Provider] = []
 
 
 class MovieWatchProviders(BaseModel):
@@ -55,9 +57,7 @@ def get_movie_details(id: int):
     return MovieDetails(**results)
 
 
-def _clean_watch_providers(providers: list[Provider] | None) -> list[str]:
-    if providers == None:
-        return []
+def _clean_watch_providers(providers: CountryWatchProviders) -> list[str]:
     mapping = {
         "Paramount+ Amazon Channel": "Paramount+",
         "Paramount Plus": "Paramount+",
@@ -65,21 +65,23 @@ def _clean_watch_providers(providers: list[Provider] | None) -> list[str]:
         "Amazon Prime Video": "Amazon Prime",
         "Amazon Prime Video with Ads": "Amazon Prime",
         "HBO Max Amazon Channel": "HBO Max",
-        "Foxtel Now": "Foxtel"
+        "Foxtel Now": "Foxtel",
+        "SBS On Demand": "SBS"
     }
     result = []
-    for provider in providers:
-        if provider.provider_name in mapping:
-            result.append(mapping[provider.provider_name])
-        else:
-            result.append(provider.provider_name)
+    for plist in [providers.flatrate, providers.free, providers.ads]:
+        for provider in plist:
+            if provider.provider_name in mapping:
+                result.append(mapping[provider.provider_name])
+            else:
+                result.append(provider.provider_name)
     return list(set(result))
 
 
 def get_movie_watch_providers(id: int, country_code: str):
     results = MovieWatchProviders(**tmdb.Movies(id).watch_providers())
     if country_code in results.results:
-        return _clean_watch_providers(results.results[country_code].flatrate)
+        return _clean_watch_providers(results.results[country_code])
     return []
 
 
