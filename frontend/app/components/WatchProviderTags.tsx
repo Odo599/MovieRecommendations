@@ -14,7 +14,7 @@ export default function WatchProviderTags({
     return (
         <div className="flex-1">
             {watchProviders.map((provider) => (
-                <WatchProviderTag watchProvider={provider} />
+                <WatchProviderTag watchProvider={provider} key={provider} />
             ))}
         </div>
     );
