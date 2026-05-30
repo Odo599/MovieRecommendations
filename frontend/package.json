@@ -7,7 +7,8 @@
         "dev": "react-router dev",
         "start": "react-router-serve ./build/server/index.js",
         "typecheck": "react-router typegen && tsc",
-        "format": "prettier -w ./app"
+        "format": "prettier -w ./app react-router.config.ts vite.config.ts eslint.config.ts",
+        "lint": "eslint ./app"
     },
     "dependencies": {
         "@floating-ui/react": "^0.27.19",
@@ -35,11 +36,14 @@
         "@types/node": "^22",
         "@types/react": "^19.2.14",
         "@types/react-dom": "^19.2.3",
-        "eslint": "^10.3.0",
+        "eslint": "^9.39.4",
         "eslint-config-prettier": "^10.1.8",
         "eslint-plugin-prettier": "^5.5.5",
+        "eslint-plugin-react": "^7.37.5",
+        "globals": "^17.6.0",
         "prettier": "^3.8.3",
         "typescript": "^5.9.3",
+        "typescript-eslint": "^8.60.0",
         "vite": "^8.0.3"
     }
 }
