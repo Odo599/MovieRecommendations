@@ -84,7 +84,7 @@ export default function Watchlist({ loaderData }: Route.ComponentProps) {
         const providers = useMemo(() => {
             const list: string[] = [];
             loaderData.watchlist.forEach((movie) => {
-                movie.watch_providers.forEach((provider) => {
+                movie.watchProviders.forEach((provider) => {
                     list.push(provider.name);
                 });
             });
@@ -101,7 +101,7 @@ export default function Watchlist({ loaderData }: Route.ComponentProps) {
                 {watchlist
                     .filter((movie) =>
                         chosenProviders.length > 0
-                            ? movie.watch_providers.some((provider) =>
+                            ? movie.watchProviders.some((provider) =>
                                   chosenProviders.some(
                                       (chosenProvider) =>
                                           provider.name == chosenProvider

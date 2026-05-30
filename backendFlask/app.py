@@ -6,6 +6,7 @@ from flask_jwt_extended import (
     create_access_token,
     get_jwt_identity,
     jwt_required,
+    verify_jwt_in_request,
 )
 from flask_cors import CORS
 from flask_limiter import Limiter, RateLimitExceeded
@@ -39,8 +40,17 @@ jwt = JWTManager(app)
 
 CORS(app, origins=["http://127.0.0.1:5173"])
 
+
+def limiter_key():
+    try:
+        verify_jwt_in_request()
+        return str(get_jwt_identity())
+    except Exception:
+        return request.headers.get("X-Real-IP", get_remote_address())
+
+
 limiter = Limiter(
-    get_remote_address,
+    key_func=limiter_key,
     app=app,
     default_limits=["100 per minute"],
 )
@@ -174,7 +184,7 @@ def movie_info(id_str):
 
 
 @app.get("/api/watchlist")
-@limiter.limit("10 per minute")
+@limiter.limit("100 per minute")
 @jwt_required()
 def get_watchlist():
     email = get_jwt_identity()

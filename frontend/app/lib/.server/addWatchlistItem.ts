@@ -2,7 +2,7 @@ import backendApi from "./api";
 import { AuthError } from "../errors";
 
 export default async function addWatchlistItem(id: number, token: string) {
-    backendApi
+    return await backendApi
         .post(
             `/api/watchlist/${id}`,
             {},
@@ -16,5 +16,6 @@ export default async function addWatchlistItem(id: number, token: string) {
             if (error?.response?.status == 401) {
                 throw new AuthError(JSON.stringify(error.response?.body));
             }
+            throw error;
         });
 }

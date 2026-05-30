@@ -10,7 +10,7 @@ function WatchProviderTag({
             <img
                 height="24"
                 width="24"
-                src={`https://media.themoviedb.org/t/p/original${watchProvider.icon_path}`}
+                src={`https://media.themoviedb.org/t/p/original${watchProvider.iconPath}`}
             />
             {watchProvider.name}
         </div>

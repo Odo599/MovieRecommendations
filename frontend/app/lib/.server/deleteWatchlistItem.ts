@@ -2,7 +2,7 @@ import backendApi from "./api";
 import { AuthError } from "../errors";
 
 export default async function deleteWatchlistItem(id: string, token: string) {
-    await backendApi
+    return await backendApi
         .delete(`/api/watchlist/${id}`, {
             headers: {
                 Authorization: `Bearer ${token}`,

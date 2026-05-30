@@ -14,6 +14,7 @@ export default async function getWatchlist(token: string) {
             if (error?.response?.status == 401) {
                 throw new AuthError(JSON.stringify(error?.response?.body));
             }
+            console.error(error);
             throw error;
         });
 }

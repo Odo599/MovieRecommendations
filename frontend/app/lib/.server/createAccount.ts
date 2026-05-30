@@ -12,7 +12,7 @@ export default async function createAccount(
     data.append("email", email);
     data.append("password", password);
     data.append("username", username);
-    data.append("country_code", countryCode);
+    data.append("countryCode", countryCode);
 
     return backendApi
         .post("/api/users/create", data, {

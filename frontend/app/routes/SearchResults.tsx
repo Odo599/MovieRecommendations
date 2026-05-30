@@ -7,7 +7,7 @@ import type { Route } from "./+types/SearchResults";
 import { data, redirect, useFetcher } from "react-router";
 import search from "~/lib/.server/search";
 import { AuthError } from "~/lib/errors";
-import type { APIMovies } from "~/lib/types";
+import { APIMovies } from "~/lib/types";
 import MovieCard from "~/components/MovieCard";
 import addWatchlistItem from "~/lib/.server/addWatchlistItem";
 import deleteWatchlistItem from "~/lib/.server/deleteWatchlistItem";
@@ -72,20 +72,23 @@ export async function action({ request }: Route.ActionArgs) {
     const formData = await request.formData();
     const id = formData.get("id")?.toString();
     const action = formData.get("action")?.toString();
+    const query = formData.get("query")?.toString();
     const token = session.get("token");
-    if (id && token) {
+    if (id && token && query) {
         if (action == "add_to_watchlist" && !isNaN(Number(id))) {
             await addWatchlistItem(Number(id), token);
         } else if (action == "remove_from_watchlist") {
             await deleteWatchlistItem(id, token);
         }
+        return await search(query, token);
     }
 }
 
 export default function SearchResults({ loaderData }: Route.ComponentProps) {
     if (isLoaderSuccess(loaderData)) {
         const { results, query } = loaderData;
-        const fetcher = useFetcher();
+        const addFetcher = useFetcher();
+        const removeFetcher = useFetcher();
 
         return (
             <div className="mb-4">
@@ -96,16 +99,21 @@ export default function SearchResults({ loaderData }: Route.ComponentProps) {
                             <MovieCard
                                 movie={movie}
                                 onAddToWatchlist={(id) => {
-                                    fetcher.submit(
-                                        { id: id, action: "add_to_watchlist" },
+                                    addFetcher.submit(
+                                        {
+                                            id: id,
+                                            action: "add_to_watchlist",
+                                            query: query,
+                                        },
                                         { method: "POST" }
                                     );
                                 }}
                                 onRemoveFromWatchlist={(id) => {
-                                    fetcher.submit(
+                                    removeFetcher.submit(
                                         {
                                             id: id,
                                             action: "remove_from_watchlist",
+                                            query: query,
                                         },
                                         { method: "DELETE" }
                                     );

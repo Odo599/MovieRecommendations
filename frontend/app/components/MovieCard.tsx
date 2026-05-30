@@ -13,8 +13,8 @@ export default function MovieCard({
     onRemoveFromWatchlist,
 }: MovieCardProps) {
     const onClick = () => {
-        if (movie.in_watchlist && movie.watchlist_id) {
-            onRemoveFromWatchlist(movie.watchlist_id);
+        if (movie.inWatchlist && movie.watchlistId) {
+            onRemoveFromWatchlist(movie.watchlistId);
         } else {
             onAddToWatchlist(movie.id);
         }
@@ -24,7 +24,7 @@ export default function MovieCard({
             <div className="flex gap-4">
                 <div className="text-xl">{movie.title}</div>
                 <button onClick={onClick} className="p-1 rounded-md ml-auto">
-                    {movie.in_watchlist ? (
+                    {movie.inWatchlist ? (
                         <FontAwesomeIcon icon={["fas", "check"]} />
                     ) : (
                         <FontAwesomeIcon icon={["far", "circle"]} />
