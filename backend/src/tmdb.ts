@@ -1,9 +1,19 @@
 import { moviedb } from ".";
 import * as z from "zod";
 import { CacheContainer } from "node-ts-cache";
-import { MemoryStorage } from "node-ts-cache-storage-memory";
+import { IoRedisStorage } from "node-ts-cache-storage-ioredis"
+import IoRedis from "ioredis"
+import { config } from "./config";
 
-const tmdbCache = new CacheContainer(new MemoryStorage());
+const ioRedisInstance = new IoRedis({
+    port: 6379,
+    host: config.REDIS_HOST,
+    family: 4,
+    password: config.REDIS_PASSWORD,
+    db: 0
+})
+
+const tmdbCache = new CacheContainer(new IoRedisStorage(ioRedisInstance));
 
 const MovieInfo = z.object({
     id: z.number(),

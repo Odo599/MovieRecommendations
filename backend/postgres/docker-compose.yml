@@ -7,3 +7,16 @@ services:
         ports:
             - 5432:5432
         image: postgres
+    redis:
+        container_name: cache-redis
+        image: redis:7.4-alpine
+        restart: unless-stopped
+        ports:
+            - 6379:6379
+        command: redis-server --requirepass mypassword --appendonly yes
+        healthcheck:
+            test: ["CMD", "redis-cli", "ping"]
+            interval: 10s
+            timeout: 5s
+            retries: 3
+

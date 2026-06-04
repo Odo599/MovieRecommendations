@@ -1,5 +1,6 @@
-import express from "express";
 import "dotenv/config";
+import { config } from "./config";
+import express from "express";
 import { drizzle } from "drizzle-orm/node-postgres";
 import { usersTable, watchlistTable } from "./db/schema";
 import { hashPassword, verifyPassword } from "./auth";
@@ -22,25 +23,13 @@ import {
 } from "./tmdb";
 import { PublicSearchResults } from "./types";
 
-if (
-    !process.env.JWT_SECRET ||
-    !process.env.DATABASE_URL ||
-    !process.env.TMDB_API_KEY
-) {
-    throw new Error("JWT_SECRET or DATABASE_URL is not defined in .env");
-}
-
-const JWT_SECRET = process.env.JWT_SECRET;
-const DATABASE_URL = process.env.DATABASE_URL;
-const TMDB_API_KEY = process.env.TMDB_API_KEY;
-
 const app = express();
-const db = drizzle(DATABASE_URL);
+const db = drizzle(config.DATABASE_URL);
 const upload = multer();
-const moviedb = new MovieDb(TMDB_API_KEY);
+const moviedb = new MovieDb(config.TMDB_API_KEY);
 const PORT = process.env.PORT || 3000;
 
-export { db, moviedb };
+export { db, moviedb }; 
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -88,7 +77,7 @@ app.post("/api/login", upload.none(), async (req, res) => {
     if (user) {
         const success = await verifyPassword(user.passwordHash, password);
         if (success) {
-            const token = jwt.sign({ email: email }, JWT_SECRET, {
+            const token = jwt.sign({ email: email }, config.JWT_SECRET, {
                 expiresIn: "1h",
             });
             return res.status(200).json({ access_token: token });
@@ -117,7 +106,7 @@ app.post("/api/users/create", upload.none(), async (req, res) => {
             countryCode: countryCode,
         };
         await addUser(user);
-        const token = jwt.sign({ email: email }, JWT_SECRET, {
+        const token = jwt.sign({ email: email }, config.JWT_SECRET, {
             expiresIn: "1h",
         });
         return res.status(201).json({ access_token: token });
