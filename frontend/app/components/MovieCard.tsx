@@ -22,7 +22,11 @@ export default function MovieCard({
     return (
         <div className="mx-4 p-2 border-b-2 border-pink-700">
             <div className="flex gap-4">
-                <div className="text-xl">{movie.title}</div>
+                <div className="text-xl">
+                    {movie.title}
+                    {movie.release_date.length > 3 &&
+                        ` (${movie.release_date.slice(0, 4)})`}
+                </div>
                 <button onClick={onClick} className="p-1 rounded-md ml-auto">
                     {movie.inWatchlist ? (
                         <FontAwesomeIcon icon={["fas", "check"]} />

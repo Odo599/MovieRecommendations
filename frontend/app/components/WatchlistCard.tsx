@@ -12,7 +12,11 @@ export default function WatchlistCard({ movie, onDelete }: WatchlistCardProps) {
     return (
         <div className="mx-4 p-2 border-b-2 border-pink-700">
             <div className="flex gap-4">
-                <div className="text-xl">{movie.title}</div>
+                <div className="text-xl">
+                    {movie.title}
+                    {movie.releaseDate.length > 3 &&
+                        ` (${movie.releaseDate.slice(0, 4)})`}
+                </div>
                 <WatchProviderTags watchProviders={movie.watchProviders} />
                 <button className="ml-auto" onClick={_onDelete}>
                     <FontAwesomeIcon icon={["fas", "trash-can"]} />
