@@ -1,8 +1,8 @@
 import { moviedb } from ".";
 import * as z from "zod";
 import { CacheContainer } from "node-ts-cache";
-import { IoRedisStorage } from "node-ts-cache-storage-ioredis"
-import IoRedis from "ioredis"
+import { IoRedisStorage } from "node-ts-cache-storage-ioredis";
+import IoRedis from "ioredis";
 import { config } from "./config";
 
 const ioRedisInstance = new IoRedis({
@@ -10,8 +10,8 @@ const ioRedisInstance = new IoRedis({
     host: config.REDIS_HOST,
     family: 4,
     password: config.REDIS_PASSWORD,
-    db: 0
-})
+    db: 0,
+});
 
 const tmdbCache = new CacheContainer(new IoRedisStorage(ioRedisInstance));
 

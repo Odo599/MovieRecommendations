@@ -24,12 +24,14 @@ import {
 import { PublicSearchResults } from "./types";
 
 const app = express();
-const db = drizzle(config.DATABASE_URL);
+const db = drizzle(
+    `postgres://${config.POSTGRES_USERNAME}:${config.POSTGRES_PASSWORD}@${config.POSTGRES_HOST}:${config.POSTGRES_PORT}/postgres`
+);
 const upload = multer();
 const moviedb = new MovieDb(config.TMDB_API_KEY);
 const PORT = process.env.PORT || 3000;
 
-export { db, moviedb }; 
+export { db, moviedb };
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
