@@ -1,9 +1,9 @@
-import { moviedb } from ".";
+import { moviedb } from "./index.js";
 import * as z from "zod";
 import { CacheContainer } from "node-ts-cache";
 import { IoRedisStorage } from "node-ts-cache-storage-ioredis";
 import IoRedis from "ioredis";
-import { config } from "./config";
+import { config } from "./config.js";
 
 const ioRedisInstance = new IoRedis({
     port: 6379,

@@ -1,6 +1,6 @@
-import { usersTable, watchlistTable } from "./db/schema";
+import { usersTable, watchlistTable } from "./db/schema.js";
 import { eq, and } from "drizzle-orm";
-import { db } from ".";
+import { db } from "./index.js";
 
 export async function getUserFromEmail(email: string) {
     const existingUsers = await db

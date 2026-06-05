@@ -1,9 +1,10 @@
-import "dotenv/config";
-import { config } from "./config";
+import dotenv from "dotenv";
+dotenv.config({ path: "../.env"})
+import { config } from "./config.js";
 import express from "express";
 import { drizzle } from "drizzle-orm/node-postgres";
-import { usersTable, watchlistTable } from "./db/schema";
-import { hashPassword, verifyPassword } from "./auth";
+import { usersTable, watchlistTable } from "./db/schema.js";
+import { hashPassword, verifyPassword } from "./auth.js";
 import jwt from "jsonwebtoken";
 import multer from "multer";
 import morgan from "morgan";
@@ -13,20 +14,20 @@ import {
     deleteWatchlistItem,
     getUserFromEmail,
     getWatchlist,
-} from "./db";
+} from "./db.js";
 import { MovieDb } from "moviedb-promise";
 import {
     getMovieInfo,
     getMovieWatchProviders,
     Provider,
     searchTmdb,
-} from "./tmdb";
-import { PublicSearchResults } from "./types";
+} from "./tmdb.js";
+import { PublicSearchResults } from "./types.js";
+
+const POSTGRES_URI = `postgres://${config.POSTGRES_USERNAME}:${config.POSTGRES_PASSWORD}@${config.POSTGRES_HOST}:${config.POSTGRES_PORT}/postgres`
 
 const app = express();
-const db = drizzle(
-    `postgres://${config.POSTGRES_USERNAME}:${config.POSTGRES_PASSWORD}@${config.POSTGRES_HOST}:${config.POSTGRES_PORT}/postgres`
-);
+const db = drizzle(POSTGRES_URI);
 const upload = multer();
 const moviedb = new MovieDb(config.TMDB_API_KEY);
 const PORT = process.env.PORT || 3000;
@@ -73,20 +74,24 @@ app.post("/api/login", upload.none(), async (req, res) => {
     const password = req.body.password;
     if (!verifyBodies([email, password]))
         return res.status(400).json({ msg: "incorrectly structured data" });
+    try {
+        const user = await getUserFromEmail(email);
 
-    const user = await getUserFromEmail(email);
-
-    if (user) {
-        const success = await verifyPassword(user.passwordHash, password);
-        if (success) {
-            const token = jwt.sign({ email: email }, config.JWT_SECRET, {
-                expiresIn: "1h",
-            });
-            return res.status(200).json({ access_token: token });
+        if (user) {
+            const success = await verifyPassword(user.passwordHash, password);
+            if (success) {
+                const token = jwt.sign({ email: email }, config.JWT_SECRET, {
+                    expiresIn: "1h",
+                });
+                return res.status(200).json({ access_token: token });
+            }
         }
+        // todo sleep for 50 ms
+        return res.status(401).json({ msg: "Bad Credentials" });
+    } catch (e) {
+        console.error(JSON.stringify(e,null,2))
+        console.error("caught error")
     }
-    // todo sleep for 50 ms
-    return res.status(401).json({ msg: "Bad Credentials" });
 });
 
 app.post("/api/users/create", upload.none(), async (req, res) => {
@@ -233,4 +238,5 @@ app.delete("/api/watchlist/:watchlist_id", async (req, res) => {
 
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
+    console.log(`Using postgres on ${POSTGRES_URI}`)
 });

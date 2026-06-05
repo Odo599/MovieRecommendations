@@ -127,7 +127,7 @@ export default function CreateAccount({ loaderData }: Route.ComponentProps) {
                 <FormField
                     type="text"
                     name="country-code"
-                    defaultValue={createAccountData?.country_code}
+                    defaultValue={createAccountData?.countryCode}
                 >
                     Enter your country code
                 </FormField>
