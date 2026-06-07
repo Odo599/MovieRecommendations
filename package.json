@@ -9,6 +9,12 @@
     "scripts": {
         "frontend": "npm run dev --workspace frontend",
         "backend": "npm run dev --workspace backend",
+        "dc:up": "dotenvx run -f .env -f .env.production -- docker compose up",
+        "dc:down": "dotenvx run -f .env -f .env.production -- docker compose down",
+        "dc:logs": "dotenvx run -f .env -f .env.production -- docker compose logs",
+        "dc-dev:up": "dotenvx run -f .env -f .env.dev -- docker compose --file compose.dev.yml up",
+        "dc-dev:down": "dotenvx run -f .env -f .env.dev -- docker compose --file compose.dev.yml down",
+        "dc-dev:logs": "dotenvx run -f .env -f .env.dev -- docker compose --file compose.dev.yml logs",
         "lint": "eslint frontend/app backend/src",
         "format": "prettier -w frontend/app backend/src eslint.config.ts frontend/react-router.config.ts frontend/vite.config.ts"
     },
@@ -22,5 +28,8 @@
         "jiti": "^2.7.0",
         "prettier": "^3.8.3",
         "typescript-eslint": "^8.60.0"
+    },
+    "dependencies": {
+        "@dotenvx/dotenvx": "^1.71.0"
     }
 }

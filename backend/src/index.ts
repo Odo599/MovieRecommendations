@@ -1,5 +1,3 @@
-import dotenv from "dotenv";
-dotenv.config({ path: "../.env"})
 import { config } from "./config.js";
 import express from "express";
 import { drizzle } from "drizzle-orm/node-postgres";

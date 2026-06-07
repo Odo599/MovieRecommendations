@@ -9,7 +9,6 @@ const ioRedisInstance = new IoRedis({
     port: 6379,
     host: config.REDIS_HOST,
     family: 4,
-    password: config.REDIS_PASSWORD,
     db: 0,
 });
 

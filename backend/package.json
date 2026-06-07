@@ -4,9 +4,9 @@
     "description": "",
     "main": "index.js",
     "scripts": {
-        "dev": "tsx watch src/index.ts",
+        "dev": "dotenvx run -f ../.env ../.env.dev -- tsx watch src/index.ts",
         "build": "tsc",
-        "start": "node dist/index.js",
+        "start": "dotenvx run -f ../.env ../.env.production -- node dist/index.js",
         "db:push": "drizzle-kit push"
     },
     "keywords": [],
@@ -15,7 +15,6 @@
     "type": "module",
     "dependencies": {
         "argon2": "^0.44.0",
-        "dotenv": "^17.4.2",
         "drizzle-orm": "^0.45.2",
         "express": "^5.2.1",
         "ioredis": "^4.31.0",

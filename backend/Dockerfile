@@ -27,12 +27,15 @@ COPY package*.json ./
 COPY backend/package*.json backend/
 COPY frontend/package*.json frontend/
 
-RUN cat backend/package.json
+RUN apk add --no-cache curl
+RUN curl -sfS https://dotenvx.sh/install.sh | sh
 
 COPY --from=deps /app/node_modules ./node_modules
 COPY --from=build /app/backend/dist ./backend/dist
 
+COPY .env* ./
+
 WORKDIR /app/backend
 EXPOSE 3000
 
-CMD ["node", "dist/index.js"]
+CMD ["npm", "run", "start"]
