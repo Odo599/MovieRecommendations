@@ -19,6 +19,7 @@ const MovieInfo = z.object({
     overview: z.string(),
     release_date: z.string(),
     title: z.string(),
+    poster_path: z.string().nullable(),
 });
 
 const MovieSearchResults = z.object({

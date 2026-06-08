@@ -5,6 +5,7 @@ const APIMovie = z.object({
     overview: z.string(),
     release_date: z.string(),
     title: z.string(),
+    poster_path: z.string().nullable(),
     inWatchlist: z.boolean(),
     watchlistId: z.string().nullable(),
 });
@@ -23,6 +24,7 @@ const APIWatchlistItem = z.object({
     overview: z.string(),
     releaseDate: z.string(),
     title: z.string(),
+    poster_path: z.string().nullable(),
     watchProviders: z.array(APIWatchProvider),
 });
 

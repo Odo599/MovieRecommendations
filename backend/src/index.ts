@@ -166,6 +166,7 @@ app.get("/api/watchlist", async (req, res) => {
         releaseDate: string;
         title: string;
         watchProviders: Provider[];
+        poster_path: string | null;
     };
 
     const watchlist = await getWatchlist(email);
@@ -182,6 +183,7 @@ app.get("/api/watchlist", async (req, res) => {
             overview: details.overview,
             releaseDate: details.release_date,
             title: details.title,
+            poster_path: details.poster_path,
             watchProviders: watchProviders,
         });
     }
