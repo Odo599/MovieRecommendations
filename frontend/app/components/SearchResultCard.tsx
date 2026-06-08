@@ -1,40 +1,43 @@
-import type { APIMovie } from "~/lib/types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import MoviePoster from "./MoviePoster";
+import Poster from "./Poster";
+import type { SearchResultSchema } from "~/lib/types";
 
-type MovieCardProps = {
-    movie: APIMovie;
+type SearchResultCardProps = {
+    item: SearchResultSchema;
     onAddToWatchlist: (id: number) => void;
     onRemoveFromWatchlist: (id: string) => void;
 };
 
-export default function MovieCard({
-    movie,
+export default function SearchResultCard({
+    item,
     onAddToWatchlist,
     onRemoveFromWatchlist,
-}: MovieCardProps) {
+}: SearchResultCardProps) {
     const onClick = () => {
-        if (movie.inWatchlist && movie.watchlistId) {
-            onRemoveFromWatchlist(movie.watchlistId);
+        if (item.watchlistId) {
+            onRemoveFromWatchlist(item.watchlistId);
         } else {
-            onAddToWatchlist(movie.id);
+            onAddToWatchlist(item.id);
         }
     };
     return (
         <div className="mx-4 p-2 flex items-start border-b-1 border-gray-700">
-            <MoviePoster posterPath={movie.poster_path} />
+            <Poster posterPath={item.poster_path} />
             <div className="flex-1">
                 <div className="flex gap-4">
                     <div className="text-xl">
-                        {movie.title}
-                        {movie.release_date.length > 3 &&
-                            ` (${movie.release_date.slice(0, 4)})`}
+                        {item.media_type == "movie" ? item.title : item.name}
+                        {(item.media_type == "movie"
+                            ? item.release_date
+                            : item.first_air_date
+                        ).length > 3 &&
+                            ` (${(item.media_type == "movie" ? item.release_date : item.first_air_date).slice(0, 4)})`}
                     </div>
                     <button
                         onClick={onClick}
                         className="p-1 rounded-md ml-auto"
                     >
-                        {movie.inWatchlist ? (
+                        {item.watchlistId ? (
                             <FontAwesomeIcon
                                 height={16}
                                 icon={["fas", "check"]}
@@ -47,7 +50,7 @@ export default function MovieCard({
                         )}
                     </button>
                 </div>
-                <div className="text-sm">{movie.overview}</div>
+                <div className="text-sm">{item.overview}</div>
             </div>
         </div>
     );

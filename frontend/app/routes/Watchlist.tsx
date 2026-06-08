@@ -58,11 +58,14 @@ export async function action({ request }: Route.ActionArgs) {
     const session = await getSession(request.headers.get("Cookie"));
     const formData = await request.formData();
     const id = formData.get("id")?.toString();
+    const mediaType = formData.get("media_type")?.toString();
     const token = session.get("token");
 
     if (request.method == "DELETE" && token && id) {
         try {
-            return data(await deleteWatchlistItem(id, token));
+            return data(
+                await deleteWatchlistItem(id, mediaType === "movie", token)
+            );
         } catch (error) {
             if (error instanceof AuthError) {
                 return redirect("/login", {
@@ -83,8 +86,8 @@ export default function Watchlist({ loaderData }: Route.ComponentProps) {
         const [chosenProviders, setChosenProviders] = useState<string[]>([]);
         const providers = useMemo(() => {
             const list: string[] = [];
-            loaderData.watchlist.forEach((movie) => {
-                movie.watchProviders.forEach((provider) => {
+            loaderData.watchlist.forEach((item) => {
+                item.watchProviders.forEach((provider) => {
                     list.push(provider.name);
                 });
             });
@@ -99,9 +102,9 @@ export default function Watchlist({ loaderData }: Route.ComponentProps) {
                     items={providers}
                 />
                 {watchlist
-                    .filter((movie) =>
+                    .filter((item) =>
                         chosenProviders.length > 0
-                            ? movie.watchProviders.some((provider) =>
+                            ? item.watchProviders.some((provider) =>
                                   chosenProviders.some(
                                       (chosenProvider) =>
                                           provider.name == chosenProvider
@@ -109,13 +112,16 @@ export default function Watchlist({ loaderData }: Route.ComponentProps) {
                               )
                             : true
                     )
-                    .map((movie) => (
-                        <div key={movie.id}>
+                    .map((item) => (
+                        <div key={item.id}>
                             <WatchlistCard
-                                movie={movie}
-                                onDelete={(id) =>
+                                item={item}
+                                onDelete={() =>
                                     fetcher.submit(
-                                        { id: id },
+                                        {
+                                            id: item.id,
+                                            media_type: item.media_type,
+                                        },
                                         { method: "DELETE" }
                                     )
                                 }

@@ -1,45 +1,67 @@
 import * as z from "zod";
 
-const APIMovie = z.object({
-    id: z.number(),
-    overview: z.string(),
-    release_date: z.string(),
-    title: z.string(),
-    poster_path: z.string().nullable(),
-    inWatchlist: z.boolean(),
-    watchlistId: z.string().nullable(),
-});
-
-const APIMovies = z.array(APIMovie);
-
-const APIWatchProvider = z.object({
+const WatchProviderSchema = z.object({
     iconPath: z.string(),
     name: z.string(),
     type: z.string(),
 });
 
-const APIWatchlistItem = z.object({
-    id: z.string(),
-    movieId: z.number(),
+const SearchItemBaseSchema = z.object({
+    id: z.number(),
     overview: z.string(),
-    releaseDate: z.string(),
-    title: z.string(),
     poster_path: z.string().nullable(),
-    watchProviders: z.array(APIWatchProvider),
+    watchlistId: z.string().nullable(),
 });
 
-const APIWatchlist = z.array(APIWatchlistItem);
+const MovieSchema = SearchItemBaseSchema.extend({
+    release_date: z.string(),
+    title: z.string(),
+    media_type: z.literal("movie"),
+});
 
-type APIMovies = z.infer<typeof APIMovies>;
-type APIMovie = z.infer<typeof APIMovie>;
-type APIWatchProvider = z.infer<typeof APIWatchProvider>;
-type APIWatchlist = z.infer<typeof APIWatchlist>;
-type APIWatchlistItem = z.infer<typeof APIWatchlistItem>;
+const TvShowSchema = SearchItemBaseSchema.extend({
+    first_air_date: z.string(),
+    name: z.string(),
+    media_type: z.literal("tv"),
+});
+
+const WatchlistItemBaseSchema = z.object({
+    id: z.string(),
+    tmdbId: z.number(),
+    overview: z.string(),
+    watchProviders: z.array(WatchProviderSchema),
+    poster_path: z.string().nullable(),
+});
+
+const WatchlistItemMovieSchema = WatchlistItemBaseSchema.extend({
+    media_type: z.literal("movie"),
+    releaseDate: z.string(),
+    title: z.string(),
+});
+
+const WatchlistItemTvSchema = WatchlistItemBaseSchema.extend({
+    media_type: z.literal("tv"),
+    firstAirDate: z.string(),
+    name: z.string(),
+});
+
+const SearchResultSchema = MovieSchema.or(TvShowSchema);
+const SearchResultsSchema = z.array(SearchResultSchema);
+
+const WatchlistItemSchema = WatchlistItemMovieSchema.or(WatchlistItemTvSchema);
+const WatchlistSchema = z.array(WatchlistItemSchema);
+
+type WatchProviderSchema = z.infer<typeof WatchProviderSchema>;
+
+type SearchResultSchema = z.infer<typeof SearchResultSchema>;
+type SearchResultsSchema = z.infer<typeof SearchResultsSchema>;
+type WatchlistItemSchema = z.infer<typeof WatchlistItemSchema>;
+type WatchlistSchema = z.infer<typeof WatchlistSchema>;
 
 export {
-    APIMovies,
-    APIMovie,
-    APIWatchProvider,
-    APIWatchlist,
-    APIWatchlistItem,
+    SearchResultSchema,
+    SearchResultsSchema,
+    WatchlistItemSchema,
+    WatchlistSchema,
+    WatchProviderSchema,
 };

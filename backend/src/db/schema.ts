@@ -1,4 +1,4 @@
-import { integer, pgTable, uuid, varchar } from "drizzle-orm/pg-core";
+import { boolean, integer, pgTable, uuid, varchar } from "drizzle-orm/pg-core";
 
 export const usersTable = pgTable("users", {
     id: integer().primaryKey().generatedAlwaysAsIdentity(),
@@ -10,7 +10,8 @@ export const usersTable = pgTable("users", {
 
 export const watchlistTable = pgTable("watchlist", {
     id: uuid().defaultRandom().primaryKey(),
-    movieId: integer().notNull(),
+    tmdbId: integer().notNull(),
+    isMovie: boolean().notNull(),
     userId: integer()
         .notNull()
         .references(() => usersTable.id),

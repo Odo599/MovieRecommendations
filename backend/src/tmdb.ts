@@ -4,6 +4,13 @@ import { CacheContainer } from "node-ts-cache";
 import { IoRedisStorage } from "node-ts-cache-storage-ioredis";
 import IoRedis from "ioredis";
 import { config } from "./config.js";
+import {
+    MovieResponse,
+    MovieResult,
+    ShowResponse,
+    TvResult,
+    WatchProviderResponse,
+} from "moviedb-promise";
 
 const ioRedisInstance = new IoRedis({
     port: 6379,
@@ -20,11 +27,16 @@ const MovieInfo = z.object({
     release_date: z.string(),
     title: z.string(),
     poster_path: z.string().nullable(),
+    media_type: z.literal("movie"),
 });
 
-const MovieSearchResults = z.object({
-    page: z.number(),
-    results: z.array(MovieInfo),
+const TvShowInfo = z.object({
+    id: z.number(),
+    overview: z.string(),
+    first_air_date: z.string(),
+    name: z.string(),
+    poster_path: z.string().nullable(),
+    media_type: z.literal("tv"),
 });
 
 const _Provider = z.object({
@@ -51,33 +63,34 @@ const Provider = z.object({
     type: z.string(),
 });
 
+const SearchResults = z.array(MovieInfo.or(TvShowInfo));
+
 type MovieInfo = z.infer<typeof MovieInfo>;
-type MovieSearchResults = z.infer<typeof MovieSearchResults>;
+type SearchResults = z.infer<typeof SearchResults>;
 type CountryWatchProviders = z.infer<typeof CountryWatchProviders>;
 type Provider = z.infer<typeof Provider>;
 
 export { Provider };
 
-export async function searchTmdb(query: string): Promise<MovieSearchResults> {
-    type MovieResultsResponse = Awaited<ReturnType<typeof moviedb.searchMovie>>;
-
+export async function searchTmdb(query: string): Promise<SearchResults> {
+    type MovieAndTvArray = (MovieResult | TvResult)[];
     const cacheKey = `search:${query}`;
-    const cached = await tmdbCache.getItem<MovieResultsResponse>(cacheKey);
+    const cached = await tmdbCache.getItem<MovieAndTvArray>(cacheKey);
 
-    let results: MovieResultsResponse;
+    let results: MovieAndTvArray;
     if (cached) {
         results = cached;
     } else {
         console.log(`no cached value for ${cacheKey}`);
-        results = await moviedb.searchMovie({ query: query });
+        results = (
+            (await moviedb.searchMulti({ query: query }))?.results ?? []
+        ).filter((r) => r.media_type !== "person");
         await tmdbCache.setItem(cacheKey, results, { ttl: 3600 });
     }
-    return MovieSearchResults.parse(results);
+    return SearchResults.parse(results);
 }
 
 export async function getMovieInfo(id: number) {
-    type MovieResponse = Awaited<ReturnType<typeof moviedb.movieInfo>>;
-
     const cacheKey = `movieInfo:${id}`;
     const cached = await tmdbCache.getItem<MovieResponse>(cacheKey);
 
@@ -89,7 +102,22 @@ export async function getMovieInfo(id: number) {
         results = await moviedb.movieInfo({ id: id });
         await tmdbCache.setItem(cacheKey, results, { ttl: 3600 });
     }
-    return MovieInfo.parse(results);
+    return MovieInfo.parse({ ...results, media_type: "movie" });
+}
+
+export async function getTvShowInfo(id: number) {
+    const cacheKey = `tvInfo:${id}`;
+    const cached = await tmdbCache.getItem<ShowResponse>(cacheKey);
+
+    let results: ShowResponse;
+    if (cached) {
+        results = cached;
+    } else {
+        console.log(`no cached value for ${cacheKey}`);
+        results = await moviedb.tvInfo({ id: id });
+        await tmdbCache.setItem(cacheKey, results, { ttl: 3600 });
+    }
+    return TvShowInfo.parse({ ...results, media_type: "tv" });
 }
 
 function _cleanWatchProviders(providers: CountryWatchProviders) {
@@ -107,8 +135,8 @@ function _cleanWatchProviders(providers: CountryWatchProviders) {
     const results: Provider[] = [];
     const typeLookup = ["flatrate", "free", "ads"];
 
-    const providerList = [providers.flatrate, providers.free, providers.ads];
-    providerList.forEach((plist, index) => {
+    const providerList = [providers?.flatrate, providers?.free, providers?.ads];
+    providerList.forEach?.((plist, index) => {
         plist?.forEach((p) => {
             const name = mapping.get(p.provider_name) ?? p.provider_name;
             results.push({
@@ -128,10 +156,6 @@ function _cleanWatchProviders(providers: CountryWatchProviders) {
 }
 
 export async function getMovieWatchProviders(id: number, countryCode: string) {
-    type WatchProviderResponse = Awaited<
-        ReturnType<typeof moviedb.movieWatchProviders>
-    >;
-
     const cacheKey = `movieWatchProviders:${id}`;
     const cached = await tmdbCache.getItem<WatchProviderResponse>(cacheKey);
     let results: WatchProviderResponse;
@@ -139,6 +163,24 @@ export async function getMovieWatchProviders(id: number, countryCode: string) {
         results = cached;
     } else {
         results = await moviedb.movieWatchProviders({ id: id });
+        await tmdbCache.setItem(cacheKey, results, { ttl: 3600 });
+    }
+    const parsed = MovieWatchProviders.parse(results);
+    if (countryCode in parsed.results) {
+        return _cleanWatchProviders(parsed.results[countryCode]!);
+    }
+    return [];
+}
+
+export async function getTvWatchProviders(id: number, countryCode: string) {
+    const cacheKey = `tvWatchProviders:${id}`;
+    const cached = await tmdbCache.getItem<WatchProviderResponse>(cacheKey);
+    let results: WatchProviderResponse;
+    if (cached) {
+        results = cached;
+    } else {
+        results = await moviedb.tvWatchProviders({ id: id });
+        console.log(`no cached value for ${cacheKey}`);
         await tmdbCache.setItem(cacheKey, results, { ttl: 3600 });
     }
     const parsed = MovieWatchProviders.parse(results);

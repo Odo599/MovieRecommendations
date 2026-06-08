@@ -1,9 +1,9 @@
-import type { APIWatchProvider } from "~/lib/types";
+import type { WatchProviderSchema } from "~/lib/types";
 
 function WatchProviderTag({
     watchProvider,
 }: {
-    watchProvider: APIWatchProvider;
+    watchProvider: WatchProviderSchema;
 }) {
     return (
         <img
@@ -19,7 +19,7 @@ function WatchProviderTag({
 export default function WatchProviderTags({
     watchProviders,
 }: {
-    watchProviders: APIWatchProvider[];
+    watchProviders: WatchProviderSchema[];
 }) {
     return (
         <div className="flex flex-wrap items-center gap-2">

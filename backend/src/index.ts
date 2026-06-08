@@ -17,10 +17,11 @@ import { MovieDb } from "moviedb-promise";
 import {
     getMovieInfo,
     getMovieWatchProviders,
-    Provider,
+    getTvShowInfo,
+    getTvWatchProviders,
     searchTmdb,
 } from "./tmdb.js";
-import { PublicSearchResults } from "./types.js";
+import { PublicSearchResults, PublicWatchlist } from "./types.js";
 
 const POSTGRES_URI = `postgres://${config.POSTGRES_USERNAME}:${config.POSTGRES_PASSWORD}@${config.POSTGRES_HOST}:${config.POSTGRES_PORT}/postgres`;
 
@@ -128,20 +129,20 @@ app.get("/api/movie/search", async (req, res) => {
     const watchlist = await getWatchlist(email);
 
     const result: PublicSearchResults = [];
-    searchResults.results.forEach((movie) => {
-        let inWatchlist = false;
+    searchResults.forEach((item) => {
         let watchlistId: string | null = null;
 
         watchlist.forEach((watchlistItem) => {
-            if (movie.id == watchlistItem.movieId) {
-                inWatchlist = true;
+            if (
+                item.id == watchlistItem.tmdbId &&
+                (watchlistItem.isMovie ? "movie" : "tv") === item.media_type
+            ) {
                 watchlistId = watchlistItem.id;
             }
         });
 
         result.push({
-            ...movie,
-            inWatchlist: inWatchlist,
+            ...item,
             watchlistId: watchlistId,
         });
     });
@@ -159,45 +160,60 @@ app.get("/api/watchlist", async (req, res) => {
         return res.status(401).json({ msg: "invalid token" });
     }
 
-    type PublicWatchlistItem = {
-        id: string;
-        movieId: number;
-        overview: string;
-        releaseDate: string;
-        title: string;
-        watchProviders: Provider[];
-        poster_path: string | null;
-    };
-
     const watchlist = await getWatchlist(email);
-    const result: PublicWatchlistItem[] = [];
+    const result: PublicWatchlist = [];
     for (const watchlistItem of watchlist) {
-        const details = await getMovieInfo(watchlistItem.movieId);
-        const watchProviders = await getMovieWatchProviders(
-            watchlistItem.movieId,
-            user.countryCode
-        );
+        if (watchlistItem.isMovie) {
+            const details = await getMovieInfo(watchlistItem.tmdbId);
+            const watchProviders = await getMovieWatchProviders(
+                watchlistItem.tmdbId,
+                user.countryCode
+            );
 
-        result.push({
-            ...watchlistItem,
-            overview: details.overview,
-            releaseDate: details.release_date,
-            title: details.title,
-            poster_path: details.poster_path,
-            watchProviders: watchProviders,
-        });
+            result.push({
+                ...watchlistItem,
+                overview: details.overview,
+                releaseDate: details.release_date,
+                title: details.title,
+                poster_path: details.poster_path,
+                watchProviders: watchProviders,
+                media_type: "movie",
+            });
+        } else {
+            const details = await getTvShowInfo(watchlistItem.tmdbId);
+            const watchProviders = await getTvWatchProviders(
+                watchlistItem.tmdbId,
+                user.countryCode
+            );
+            result.push({
+                ...watchlistItem,
+                overview: details.overview,
+                firstAirDate: details.first_air_date,
+                name: details.name,
+                poster_path: details.poster_path,
+                watchProviders: watchProviders,
+                media_type: "tv",
+            });
+        }
     }
     return res.status(200).json(result);
 });
 
-app.post("/api/watchlist/:movie_id_str", async (req, res) => {
+app.post("/api/watchlist/:tmdb_id_str", async (req, res) => {
     const email = verifyUserToken(req.headers.authorization);
-    const movieId = Number(req.params.movie_id_str);
+    const tmdbId = Number(req.params.tmdb_id_str);
+    let isMovie: boolean;
+    if (req.query.isMovie === "true") isMovie = true;
+    else if (req.query.isMovie === "false") isMovie = false;
+    else
+        return res
+            .status(400)
+            .json({ msg: "could not parse isMovie as boolean" });
 
     if (email == null) {
         return res.status(401).json({ msg: "invalid token" });
     }
-    if (isNaN(movieId)) {
+    if (isNaN(tmdbId)) {
         return res.status(400).json({ msg: "could not parse id as integer" });
     }
 
@@ -207,13 +223,14 @@ app.post("/api/watchlist/:movie_id_str", async (req, res) => {
     }
 
     const item: typeof watchlistTable.$inferInsert = {
-        movieId: movieId,
+        tmdbId: tmdbId,
+        isMovie: isMovie,
         userId: user.id,
     };
 
     const insertedItem = await addWatchlistItem(item);
     if (!insertedItem) {
-        return res.status(200).json({ msg: "movie is already in watchlist" });
+        return res.status(200).json({ msg: "item is already in watchlist" });
     }
     return res.status(200).json(insertedItem);
 });

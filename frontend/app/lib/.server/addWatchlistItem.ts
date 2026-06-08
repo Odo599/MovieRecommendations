@@ -1,10 +1,14 @@
 import backendApi from "./api";
 import { AuthError } from "../errors";
 
-export default async function addWatchlistItem(id: number, token: string) {
+export default async function addWatchlistItem(
+    id: number,
+    isMovie: boolean,
+    token: string
+) {
     return await backendApi
         .post(
-            `/api/watchlist/${id}`,
+            `/api/watchlist/${id}?isMovie=${isMovie}`,
             {},
             {
                 headers: {

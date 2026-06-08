@@ -7,11 +7,11 @@ import type { Route } from "./+types/SearchResults";
 import { data, redirect, useFetcher } from "react-router";
 import search from "~/lib/.server/search";
 import { AuthError } from "~/lib/errors";
-import { APIMovies } from "~/lib/types";
-import MovieCard from "~/components/MovieCard";
 import addWatchlistItem from "~/lib/.server/addWatchlistItem";
 import deleteWatchlistItem from "~/lib/.server/deleteWatchlistItem";
 import HeaderText from "~/components/HeaderText";
+import type { SearchResultsSchema } from "~/lib/types";
+import SearchResultCard from "~/components/SearchResultCard";
 
 export function meta() {
     // todo show search query in title
@@ -20,7 +20,7 @@ export function meta() {
 
 interface LoaderSuccess {
     query: string;
-    results: APIMovies;
+    results: SearchResultsSchema;
 }
 
 function isLoaderSuccess(obj: unknown): obj is LoaderSuccess {
@@ -71,14 +71,15 @@ export async function action({ request }: Route.ActionArgs) {
     const session = await getSession(request.headers.get("Cookie"));
     const formData = await request.formData();
     const id = formData.get("id")?.toString();
+    const mediaType = formData.get("mediaType")?.toString();
     const action = formData.get("action")?.toString();
     const query = formData.get("query")?.toString();
     const token = session.get("token");
-    if (id && token && query) {
+    if (id && token && query && (mediaType === "movie" || mediaType === "tv")) {
         if (action == "add_to_watchlist" && !isNaN(Number(id))) {
-            await addWatchlistItem(Number(id), token);
+            await addWatchlistItem(Number(id), mediaType === "movie", token);
         } else if (action == "remove_from_watchlist") {
-            await deleteWatchlistItem(id, token);
+            await deleteWatchlistItem(id, mediaType === "movie", token);
         }
         return await search(query, token);
     }
@@ -93,15 +94,16 @@ export default function SearchResults({ loaderData }: Route.ComponentProps) {
         return (
             <div className="mb-4">
                 <HeaderText text={`Search results for ${query}.`} />
-                {results.map((movie) => {
+                {results.map((item) => {
                     return (
-                        <div key={movie.id}>
-                            <MovieCard
-                                movie={movie}
+                        <div key={item.id}>
+                            <SearchResultCard
+                                item={item}
                                 onAddToWatchlist={(id) => {
                                     addFetcher.submit(
                                         {
                                             id: id,
+                                            mediaType: item.media_type,
                                             action: "add_to_watchlist",
                                             query: query,
                                         },
@@ -112,6 +114,7 @@ export default function SearchResults({ loaderData }: Route.ComponentProps) {
                                     removeFetcher.submit(
                                         {
                                             id: id,
+                                            mediaType: item.media_type,
                                             action: "remove_from_watchlist",
                                             query: query,
                                         },

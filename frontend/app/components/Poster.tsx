@@ -1,8 +1,4 @@
-export default function MoviePoster({
-    posterPath,
-}: {
-    posterPath: string | null;
-}) {
+export default function Poster({ posterPath }: { posterPath: string | null }) {
     return posterPath ? (
         <img
             src={`https://image.tmdb.org/t/p/w300${posterPath}`}
