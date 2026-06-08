@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useFloating, autoUpdate } from "@floating-ui/react";
+import { useFloating, autoUpdate, flip, size } from "@floating-ui/react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 type DropDownProps = {
@@ -24,6 +24,17 @@ export default function DropDown({
     const [focused, setFocused] = useState<boolean>(false);
     const { refs, floatingStyles } = useFloating({
         whileElementsMounted: autoUpdate,
+        placement: "bottom-start",
+        middleware: [
+            flip(),
+            size({
+                apply({ rects, elements }) {
+                    Object.assign(elements.floating.style, {
+                        width: `${rects.reference.width}px`,
+                    });
+                },
+            }),
+        ],
     });
 
     const visibleItems = useMemo(() => {
@@ -86,12 +97,17 @@ export default function DropDown({
         <div className={className}>
             <div
                 ref={refs.setReference}
-                className="mx-6 p-1 flex gap-2 border border-red-500"
+                className={
+                    `mx-6 p-1 flex rounded-lg gap-2 border-2 ` +
+                    (focused
+                        ? "border-[#2684ff] dark:border-[#0148a6]"
+                        : "border-[#cccccc] dark:border-[#5a5f60]")
+                }
             >
                 {chosenItems.map((item) => (
                     <button
                         key={item}
-                        className="bg-gray-900 p-1"
+                        className="bg-[#CFCFD6] dark:bg-gray-900 p-1 text-sm rounded-sm"
                         onClick={() =>
                             setChosenItems((prev) =>
                                 prev.filter((chosenItem) => chosenItem !== item)
@@ -99,7 +115,7 @@ export default function DropDown({
                         }
                     >
                         {item}
-                        <FontAwesomeIcon icon={["far", "circle-xmark"]} />
+                        <FontAwesomeIcon icon={["fas", "xmark"]} />
                     </button>
                 ))}
                 <input
@@ -116,12 +132,16 @@ export default function DropDown({
             <div
                 style={floatingStyles}
                 ref={refs.setFloating}
-                className={focused ? "w-full box-border m-2 bg-gray-500" : ""}
+                className={
+                    focused
+                        ? "mt-2 box-border bg-white dark:bg-gray-950 shadow-lg dark:shadow-gray-900/50"
+                        : ""
+                }
             >
                 {focused &&
                     visibleItems.map((item) => (
                         <div
-                            className={`p-1 ${item == selectedItem ? "bg-red-500" : ""}`}
+                            className={`p-1 rounded-sm ${item == selectedItem ? "bg-[#2A83FF]" : ""}`}
                             key={item}
                             onMouseDown={() =>
                                 setChosenItems([...chosenItems, item])

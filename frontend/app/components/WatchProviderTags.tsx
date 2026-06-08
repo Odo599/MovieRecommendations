@@ -6,14 +6,13 @@ function WatchProviderTag({
     watchProvider: APIWatchProvider;
 }) {
     return (
-        <div className="rounded-lg bg-red-500 text-center text-sm inline-flex m-1 px-2 py-1 flex items-center gap-2">
-            <img
-                height="24"
-                width="24"
-                src={`https://media.themoviedb.org/t/p/original${watchProvider.iconPath}`}
-            />
-            {watchProvider.name}
-        </div>
+        <img
+            height="36"
+            width="36"
+            className="rounded-lg h-9 w-9 flex-shrink-0 object-cover"
+            src={`https://media.themoviedb.org/t/p/original${watchProvider.iconPath}`}
+            alt={watchProvider.name}
+        />
     );
 }
 
@@ -23,7 +22,7 @@ export default function WatchProviderTags({
     watchProviders: APIWatchProvider[];
 }) {
     return (
-        <div className="flex-1">
+        <div className="flex flex-wrap items-center gap-2">
             {watchProviders.map((provider) => (
                 <WatchProviderTag
                     watchProvider={provider}
