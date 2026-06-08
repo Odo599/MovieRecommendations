@@ -7,6 +7,7 @@ RUN curl -sfS https://dotenvx.sh/install.sh | sh
 COPY .env* ./
 COPY . .
 RUN npm --workspace frontend ci
+RUN npm --workspace frontend run typecheck
 RUN npm --workspace frontend run build
 
 

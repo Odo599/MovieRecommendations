@@ -28,6 +28,13 @@ services:
             - 8080:3000
         env_file:
             ./.env.keys
+        networks:
+            - default
+            - public_net
+
+networks:
+    public_net:
+        external: true
 
 include:
     - ./compose.db.yml
