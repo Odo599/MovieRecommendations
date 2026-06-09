@@ -10,6 +10,7 @@ import {
     MainForm,
     ErrorBox,
 } from "~/components/FormComponents";
+import FloatingTooltip from "~/components/FloatingTooltip";
 
 export function meta() {
     return [{ title: "Create Account" }];
@@ -129,7 +130,19 @@ export default function CreateAccount({ loaderData }: Route.ComponentProps) {
                     name="country-code"
                     defaultValue={createAccountData?.countryCode}
                 >
-                    Enter your country code
+                    2 digit country code
+                    <FloatingTooltip>
+                        TMDB uses ISO 3316 codes, you can find your country{" "}
+                        <a
+                            href="https://www.iso.org/obp/ui/#search/code"
+                            target="_blank"
+                            rel="noreferrer"
+                            className="text-blue-500 underline"
+                        >
+                            here
+                        </a>
+                        .
+                    </FloatingTooltip>
                 </FormField>
 
                 <PrimaryButton type="submit">Create Account</PrimaryButton>
