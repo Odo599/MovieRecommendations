@@ -25,14 +25,14 @@ export function FormField({
         <>
             <label
                 htmlFor={name}
-                className="w-full md:w-32 text-gray-400 font-medium mb-1 md:md-0 md:pr-4"
+                className="w-full md:w-32 text-gray-500 dark:text-gray-400 font-medium mb-1 md:md-0 md:pr-4"
             >
                 {children}
                 <input
                     type={type}
                     name={name}
                     defaultValue={defaultValue}
-                    className="w-full rounded-md border border-gray-300 text-gray-200 p-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                    className="w-full rounded-md border border-slate-400 dark:border-gray-300 dark:text-gray-200 p-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                 />
             </label>
             <br />
