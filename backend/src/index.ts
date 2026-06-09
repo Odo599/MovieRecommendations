@@ -22,11 +22,13 @@ import {
     searchTmdb,
 } from "./tmdb.js";
 import { PublicSearchResults, PublicWatchlist } from "./types.js";
+import { migrate } from "drizzle-orm/postgres-js/migrator";
 
 const POSTGRES_URI = `postgres://${config.POSTGRES_USERNAME}:${config.POSTGRES_PASSWORD}@${config.POSTGRES_HOST}:${config.POSTGRES_PORT}/postgres`;
 
 const app = express();
 const db = drizzle(POSTGRES_URI);
+await migrate(db, { migrationsFolder: "./drizzle" });
 const upload = multer();
 const moviedb = new MovieDb(config.TMDB_API_KEY);
 const PORT = process.env.PORT || 3000;

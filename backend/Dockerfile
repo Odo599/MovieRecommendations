@@ -32,6 +32,7 @@ RUN curl -sfS https://dotenvx.sh/install.sh | sh
 
 COPY --from=deps /app/node_modules ./node_modules
 COPY --from=build /app/backend/dist ./backend/dist
+COPY --from=build /app/backend/drizzle ./backend/drizzle
 
 COPY .env* ./
 
